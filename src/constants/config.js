@@ -13,7 +13,7 @@ export const FIREBASE_CONFIG = {
 
 
 if (!GOOGLE_MAPS_API_KEY) {
-  throw new Error('EXPO_PUBLIC_GOOGLE_MAPS_API_KEY is not defined in .env file');
+  throw new Error('google map api key is not defined in .env file');
 }
 
 if (!FIREBASE_CONFIG.apiKey) {
