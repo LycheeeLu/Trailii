@@ -1,6 +1,6 @@
 import React from "react";
 import {View, Text, StyleSheet} from "react-native";
-import { COLORS } from "../constants/config";
+
 
 const MapScreen = () =>{
 
@@ -15,7 +15,6 @@ const MapScreen = () =>{
 const styles = StyleSheet.create({
     container:{
         flex:1,
-        backgroundColor: COLORS.background,
         justifyContent: 'center',
         alignItems: 'center',
     },

@@ -1,6 +1,6 @@
 import React from "react";
-import {View, Text, StyleSheet } from "react";
-import { COLORS } from "../constants/config";
+import {View, Text, StyleSheet } from "react-native";
+
 
 const ItineraryScreen = () =>{
 
@@ -15,7 +15,6 @@ const ItineraryScreen = () =>{
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: COLORS.white,
     justifyContent: 'center',
     alignItems: 'center',
   },
