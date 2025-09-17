@@ -33,7 +33,7 @@ export default function App() {
             tabBarInactiveTintColor: COLORS.gray,
             headerStyle: { backgroundColor: COLORS.background },
             headerTitleStyle: { fontWeight: 'bold' },
-            headerTintColor: COLORS.surface,
+            headerTintColor: COLORS.primary,
           })}
         >
           <Tab.Screen name="Itinerary" component={ItineraryScreen} />
