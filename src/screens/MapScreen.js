@@ -76,6 +76,10 @@ const styles = StyleSheet.create({
 
     map:{
         flex: 1,
+        borderColor: COLORS.border,
+        borderWidth: 1,
+        width: '100%',
+
     },
 
     loadingContainer:{
