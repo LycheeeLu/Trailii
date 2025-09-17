@@ -38,9 +38,8 @@ export default {
         {
           locationAlwaysAndWhenInUsePermission: "Allow Trailii to use your location to find nearby places and optimize your travel routes."
         },
-        "expo-maps"
-
-      ]
+      ],
+     //"expo-maps"
     ]
   }
 };

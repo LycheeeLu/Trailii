@@ -1,7 +1,8 @@
 import React, {useState, useEffect} from "react";
 import {View, Text, StyleSheet, Alert} from "react-native";
 import { COLORS } from "../constants/config";
-import MapView, { Marker} from 'react-native-maps';
+//import MapView, { Marker} from 'expo-maps';
+import MapView, {Marker} from "react-native-maps";
 import * as Location from 'expo-location';
 
 

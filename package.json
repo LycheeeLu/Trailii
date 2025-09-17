@@ -17,15 +17,14 @@
     "expo-status-bar": "~3.0.8",
     "react": "19.1.0",
     "react-native": "0.81.4",
-    "react-native-maps": "^1.26.6",
-    "expo-maps": "~0.12.7"
+    "react-native-maps": "1.20.1"
   },
   "private": true,
   "devDependencies": {
+    "@react-native-community/cli": "latest",
+    "@types/react": "~19.1.10",
     "babel-plugin-dotenv-import": "^3.0.1",
     "babel-preset-expo": "^54.0.1",
-    "typescript": "~5.9.2",
-    "@types/react": "~19.1.10",
-    "@react-native-community/cli": "latest"
+    "typescript": "~5.9.2"
   }
 }
