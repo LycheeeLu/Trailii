@@ -30,10 +30,13 @@ const MapScreen = () => {
             setLocation(currentLocation);
 
             const newRegion = {
-                latitude: currentLocation.coords.latitude,
-                longitude: currentLocation.coords.longitude,
-                latitudeDelta: 0.001,
-                longitudeDelta: 0.001,
+                //latitude: currentLocation.coords.latitude,
+                //longitude: currentLocation.coords.longitude,
+                latitude: 60.1699,
+                longitude: 24.9384,
+                latitudeDelta: 0.010,
+                longitudeDelta: 0.010,
+                //helsinki cathedral
 
             };
             setRegion(newRegion);
