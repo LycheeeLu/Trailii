@@ -1,8 +1,8 @@
-import { GOOGLE_MAPS_API_KEY } from '../constants/config';
+import {MAPS_API_KEY} from '../constants/config';
 
 class GooglePlacesService {
     constructor() {
-        this.apikey = GOOGLE_MAPS_API_KEY;
+        this.apikey = MAPS_API_KEY;
         this.baseUrl = 'https://maps.googleapis.com/maps/api/place';
     }
 

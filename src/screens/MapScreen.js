@@ -1,11 +1,14 @@
 import React, {useState, useEffect} from "react";
 import {View, Text, StyleSheet, Alert} from "react-native";
 import { COLORS } from "../constants/config";
-//import MapView, { Marker} from 'expo-maps';
 import MapView, {Marker} from "react-native-maps";
 import * as Location from 'expo-location';
 import googePlacesService from "../services/googlePlacesService";
 import SearchBar from "../components/map/SearchBar";
+
+console.log('Location object:', Location);
+console.log('SearchBar component:', SearchBar);
+console.log('googePlacesService object:', googePlacesService);
 
 
 const MapScreen = () => {
@@ -44,7 +47,7 @@ const MapScreen = () => {
 
     const loadNearbyPlaces = async (latitude, longitude) => {
         try {
-            const nearbyPlaces = await googePlacesService.searchNearby(latitude, longitude);
+            const nearbyPlaces = await googePlacesService.searchNearby(latitude, longitude, 5000);
             setPlaces(nearbyPlaces);
         } catch (error) {
             console.error('Error loading nearby places:', error);

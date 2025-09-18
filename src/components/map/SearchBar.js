@@ -5,8 +5,6 @@ import { COLORS } from "../../constants/config";
 import GooglePlacesService from "../../services/googlePlacesService";
 import { View, Text, TextInput, FlatList, ActivityIndicator, StyleSheet } from "react-native";
 
-export default SearchBar;
-
 const SearchBar = ({onPlaceSelect, currentLocation}) => {
     const [query, setQuery] = useState('');
     const [result, setResult] = useState([]);
@@ -137,7 +135,7 @@ const styles = StyleSheet.create({
         marginLeft: 10,
     },
     resultsList: {
-        backgroundColor: COLORS.surface,
+        backgroundColor: COLORS.background,
         borderRadius: 8,
         marginTop: 10,
         maxHeight: 200,
@@ -167,3 +165,4 @@ const styles = StyleSheet.create({
     },
 });
 
+export default SearchBar;
