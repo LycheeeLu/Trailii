@@ -49,7 +49,13 @@ class GooglePlacesService {
 
             if (data.status === 'OK') {
                 return data.results.map(place => this.formatPlace(place));
-            } else {
+            } else if (data.status === 'ZERO_RESULTS') {
+                console.warn('No places found for query:', query);
+                return [];
+                //instead of throwing error, return empty array
+            }
+
+            else {
                 throw new Error(`Places API error: ${data.status}`);
             }
 

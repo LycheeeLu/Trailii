@@ -47,7 +47,7 @@ const MapScreen = () => {
 
     const loadNearbyPlaces = async (latitude, longitude) => {
         try {
-            const nearbyPlaces = await googePlacesService.searchNearby(latitude, longitude, 5000);
+            const nearbyPlaces = await googePlacesService.searchNearby(latitude, longitude, 10000);
             setPlaces(nearbyPlaces);
         } catch (error) {
             console.error('Error loading nearby places:', error);
