@@ -1,7 +1,7 @@
 import { Ionicons } from "@expo/vector-icons";
 import React, {useState} from "react";
 import { TouchableOpacity } from "react-native";
-import COLORS from "../../constants/config";
+import { COLORS } from "../../constants/config";
 import GooglePlacesService from "../../services/googlePlacesService";
 import { View, Text, TextInput, FlatList, ActivityIndicator, StyleSheet } from "react-native";
 
@@ -115,7 +115,7 @@ const styles = StyleSheet.create({
     searchContainer: {
         flexDirection: 'row',
         alignItems: 'center',
-        backgroundColor: COLORS.white,
+        backgroundColor: COLORS.background,
         borderRadius: 8,
         paddingHorizontal: 10,
         paddingVertical: 12,
@@ -137,7 +137,7 @@ const styles = StyleSheet.create({
         marginLeft: 10,
     },
     resultsList: {
-        backgroundColor: COLORS.white,
+        backgroundColor: COLORS.surface,
         borderRadius: 8,
         marginTop: 10,
         maxHeight: 200,

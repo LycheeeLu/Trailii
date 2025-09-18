@@ -4,9 +4,8 @@ import { COLORS } from "../constants/config";
 //import MapView, { Marker} from 'expo-maps';
 import MapView, {Marker} from "react-native-maps";
 import * as Location from 'expo-location';
-import googePlacesService from "../services/googePlacesService";
-import search from "../services/googePlacesService";
-import SearchBar from "../components/map/searchBar";
+import googePlacesService from "../services/googlePlacesService";
+import SearchBar from "../components/map/SearchBar";
 
 
 const MapScreen = () => {
@@ -142,7 +141,7 @@ const styles = StyleSheet.create({
     container:{
         flex:1,
         justifyContent: 'center',
-        backgroundColor: COLORS.background,
+        backgroundColor: COLORS.surface,
         alignItems: 'center',
     },
 
@@ -158,7 +157,7 @@ const styles = StyleSheet.create({
         flex:1,
         justifyContent: 'center',
         alignItems: 'center',
-        backgroundColor: COLORS.background,
+        backgroundColor: COLORS.surface,
     }
 });
 
