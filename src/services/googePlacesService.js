@@ -36,6 +36,28 @@ class GooglePlacesService {
 
 
     // search for places by text query
+    async searchByText(query, latitude, longtitude){
+        try {
+            const url = `${this.baseUrl}/place/textsearch/json?` +
+            `query=${encodeURIComponent(query)}&` +
+            `location=${latitude},${longtitude}&` +
+            `radius=5000&` +
+            `key=${this.apikey}`;
+
+            const response = await fetch(url);
+            const data = await response.json();
+
+            if (data.status === 'OK') {
+                return data.results.map(place => this.formatPlace(place));
+            } else {
+                throw new Error(`Places API error: ${data.status}`);
+            }
+
+        } catch (error) {
+            console.error('Error searching places by text:', error);
+            throw error;
+        }
+    }
 
     // get detailed place info
 
