@@ -38,7 +38,7 @@ class GooglePlacesService {
     // search for places by text query
     async searchByText(query, latitude, longtitude){
         try {
-            const url = `${this.baseUrl}/place/textsearch/json?` +
+            const url = `${this.baseUrl}/textsearch/json?` +
             `query=${encodeURIComponent(query)}&` +
             `location=${latitude},${longtitude}&` +
             `radius=5000&` +
