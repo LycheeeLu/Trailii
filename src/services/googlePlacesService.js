@@ -9,12 +9,14 @@ class GooglePlacesService {
     // search for places near a location
     async searchNearby(latitude, longitude, radius = 5000, keyword = '') {
         try {
-            const url = `${this.baseUrl}/place/nearbysearch/json` +
+            const url = `${this.baseUrl}/nearbysearch/json?` +
             `location=${latitude},${longitude}&` +
             `radius=${radius}&` +
             `type=tourist_attraction|restaurant|cafe|park|mall&`+
             `keyword=${keyword}&` +
             `key=${this.apikey}`;
+
+            console.log('Nearby Places URL:', url);
 
             const response = await fetch(url);
             const data = await response.json();
