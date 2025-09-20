@@ -12,6 +12,7 @@ export const FIREBASE_CONFIG = {
 };
 
 export const MAPS_API_KEY = GOOGLE_MAPS_API_KEY;
+
 if (!GOOGLE_MAPS_API_KEY) {
   throw new Error('google map api key is not defined in .env file');
 }
