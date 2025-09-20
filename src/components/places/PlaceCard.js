@@ -87,15 +87,15 @@ const PlaceCard = ({place, onClose, visible}) => {
                     </TouchableOpacity>
 
                     <TouchableOpacity
-                        style = {[styles.tab, activeTab === 'photos' && styles.activeTab ]}
-                        onPress = {() => setActiveTab('photos')}>
-                        <Text style = {[styles.tabText, activeTab === 'photos'&& styles.activeTabText]}>Photos</Text>
-                    </TouchableOpacity>
-
-                    <TouchableOpacity
                         style = {[styles.tab, activeTab === 'details' && styles.activeTab ]}
                         onPress = {() => setActiveTab('details')}>
                         <Text style = {[styles.tabText, activeTab === 'details'&& styles.activeTabText]}>Details</Text>
+                    </TouchableOpacity>
+
+                        <TouchableOpacity
+                        style = {[styles.tab, activeTab === 'photos' && styles.activeTab ]}
+                        onPress = {() => setActiveTab('photos')}>
+                        <Text style = {[styles.tabText, activeTab === 'photos'&& styles.activeTabText]}>Photos</Text>
                     </TouchableOpacity>
                 </View>
 
@@ -104,6 +104,7 @@ const PlaceCard = ({place, onClose, visible}) => {
                   <ScrollView style = {styles.content}>
                         {activeTab === 'main' && (
                         <View style = {styles.mainTab}>
+
                             <Text style = {styles.sectionTitle}>Add to itinerary: </Text>
                             <View style = {styles.dayButtons}>
                                 {['day1', 'day2', 'day3'].map((day) => (
@@ -126,7 +127,13 @@ const PlaceCard = ({place, onClose, visible}) => {
                                 ))}
                             </View>
 
-                            {displayPlace.rating && (
+
+                        </View>
+                        )}
+
+                        {activeTab === 'details' && (
+                            <View style = {styles.detailsTab}>
+                           {displayPlace.rating && (
                                 <View style = {styles.quickInfo}>
                                     <View style = {styles.ratingContainer}>
                                         <Ionicons name = "star" size = {16} color = {COLORS.warning}/>
@@ -140,11 +147,8 @@ const PlaceCard = ({place, onClose, visible}) => {
                                     )}
                                 </View>
                             )}
-                        </View>
-                        )}
 
-                        {activeTab === 'details' && (
-                            <View style = {styles.detailsTab}>
+
                                 {loading ? (
                                     <Text>Loading details...</Text>
                                 ) : (
@@ -162,7 +166,7 @@ const PlaceCard = ({place, onClose, visible}) => {
                                         {displayPlace.website && (
                                             <TouchableOpacity style= { styles.detailItem} onPress = {openWebsite}>
                                                 <Ionicons name = "globe" size = {16} color = {COLORS.primary}/>
-                                                <Text style = {[styles.detailText, styles.link]}>Visit webiste: {displayPlace.website}</Text>
+                                                <Text style = {[styles.detailText, styles.link]}>{displayPlace.website}</Text>
                                             </TouchableOpacity>
                                         )}
 
