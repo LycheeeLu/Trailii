@@ -5,6 +5,7 @@ import MapView, {Marker} from "react-native-maps";
 import * as Location from 'expo-location';
 import googePlacesService from "../services/googlePlacesService";
 import SearchBar from "../components/map/SearchBar";
+import PlaceCard from "../components/places/PlaceCard";
 
 console.log('Location object:', Location);
 console.log('SearchBar component:', SearchBar);
@@ -16,6 +17,7 @@ const MapScreen = () => {
     const [region, setRegion] = useState(null);
     const [places, setPlaces] = useState([]);
     const [selectedPlace, setSelectedPlace] = useState(null);
+    const [showPlaceCard, setShowPlaceCard] = useState(false);
 
     useEffect(() => {
         (async () => {
@@ -59,6 +61,8 @@ const MapScreen = () => {
 
     const handlePlaceSelect = (place) => {
         setSelectedPlace(place);
+        setShowPlaceCard(true);
+
         // move map to selected place
         const newRegion = {
             latitude: place.location.latitude,
@@ -76,13 +80,23 @@ const MapScreen = () => {
 
      };
 
+     const handleMarkerPress = (place) => {
+        handlePlaceSelect(place);
+        setShowPlaceCard(true);
+     }
 
      const handleMapPress = (event) => {
-        const {latitude, longitude} = event.nativeEvent.coordinate;
+        setShowPlaceCard(false);
 
         //maybe reverse geocode?
         // tap on an address and then add to places
         // so that we can create custom place
+        setSelectedPlace(null);
+     };
+
+
+     const handleClosePlaceCard = () => {
+        setShowPlaceCard(false);
         setSelectedPlace(null);
      };
 
@@ -120,6 +134,7 @@ const MapScreen = () => {
                     />
                 )}
 
+                 {/* Place markers */}
                 { places.map((place) => (
                         <Marker
                             key={place.id}
@@ -137,6 +152,13 @@ const MapScreen = () => {
             <SearchBar
                 onPlaceSelect={handlePlaceSelect}
                 currentLocation = {region}
+            />
+
+             {/* Place Card Modal */}
+             <PlaceCard
+                place={selectedPlace}
+                visible={showPlaceCard}
+                onClose={handleClosePlaceCard}
             />
         </View>
     );

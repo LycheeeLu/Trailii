@@ -1,17 +1,18 @@
 import {useState, useEffect, use} from 'react';
+import {View, Text, StyleSheet, Image, Alert} from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useTrip } from '../../contexts/TripContext';
 import googlePlacesService from '../../services/googlePlacesService';
 import { COLORS, SIZES } from '../../constants/config';
 import { Linking, Touchable, TouchableOpacity } from 'react-native';
-import { ScrollView } from 'react-native-web';
+import { ScrollView } from 'react-native';
 
 
 const PlaceCard = ({place, onClose, visible}) => {
     const [activeTab, setActiveTab] = useState('main');
     const [placeDetails, setPlaceDetails] = useState(null);
     const [loading, setLoading] = useState(false);
-    const [ saveToDay, itinerary ] = useTrip();
+    const { saveToDay, itinerary } = useTrip();
 
 
     useEffect(() => {
@@ -102,7 +103,7 @@ const PlaceCard = ({place, onClose, visible}) => {
                   {/* Tab content */}
                   <ScrollView style = {styles.content}>
                         {activeTab === 'main' && (
-                        <view style = {styles.mainTab}>
+                        <View style = {styles.mainTab}>
                             <Text style = {styles.sectionTitle}>Add to itinerary: </Text>
                             <View style = {styles.dayButtons}>
                                 {['day1', 'day2', 'day3'].map((day) => (
@@ -139,7 +140,7 @@ const PlaceCard = ({place, onClose, visible}) => {
                                     )}
                                 </View>
                             )}
-                        </view>
+                        </View>
                         )}
 
                         {activeTab === 'details' && (

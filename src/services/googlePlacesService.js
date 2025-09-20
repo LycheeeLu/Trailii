@@ -70,7 +70,7 @@ class GooglePlacesService {
 
         try {
             const fields = 'place_id, name,formatted_address,photos,opening_hours,website,rating,formatted_phone_number,geometry,types';
-            const url = `${this.baseUrl}/place/details/json?` +
+            const url = `${this.baseUrl}/details/json?` +
             `place_id=${placeId}&` +
             `fields=${fields}&` +
             `key=${this.apikey}`;
