@@ -1,4 +1,4 @@
-import {useState, useEffect, use} from 'react';
+import React, {useState, useEffect} from 'react';
 import {View, Text, StyleSheet, Image, Alert} from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useTrip } from '../../contexts/TripContext';
@@ -115,7 +115,7 @@ const PlaceCard = ({place, onClose, visible}) => {
 
                             <Text style = {styles.sectionTitle}>Add to itinerary: </Text>
                             <View style = {styles.dayButtons}>
-                                {['day1', 'day2', 'day3'].map((day) => (
+                                {['day1', 'day2', 'day3', 'day4', 'day5', 'day6', 'day7'].map((day) => (
                                     <TouchableOpacity
                                         key = {day}
                                         style = {styles.dayButton}
