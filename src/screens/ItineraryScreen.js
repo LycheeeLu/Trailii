@@ -17,7 +17,6 @@ const DAYS = [
   {key: 'day6', label: 'Day 6'},
   {key: 'day7', label: 'Day 7'},
   {key: 'day8', label: 'Day 8'},
-  {key: 'day9', label: 'Day 9'},
 ]
 
 
@@ -106,6 +105,7 @@ const ItineraryScreen = () =>{
                 </Text>
               </View>
 
+
                    {/* Day Tabs on the Left */}
                   <View style={styles.tabsContainer}>
                     <ScrollView
@@ -145,6 +145,7 @@ const ItineraryScreen = () =>{
                       <Text>imagine here is daytab</Text>
                     </View>
 
+
                      {/* Quick Add Button */}
                      <TouchableOpacity style={styles.quickAddButton}>
                       <Ionicons name="add-circle" size={24} color={COLORS.white} />
@@ -176,7 +177,7 @@ const styles = StyleSheet.create({
   tripTitle: {
     fontSize: 24,
     fontWeight: 'bold',
-    color: COLORS.white,
+    color: COLORS.primary,
     marginBottom: 5,
   },
   tripSummary: {
@@ -192,7 +193,6 @@ const styles = StyleSheet.create({
     flexGrow: 1,
     paddingHorizontal: 10,
     justifyContent: "space-around",
-    paddingBottom: 40,
   },
   dayTab: {
     paddingHorizontal: 20,
