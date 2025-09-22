@@ -112,6 +112,7 @@ const ItineraryScreen = () =>{
                       contentContainerStyle={
                         styles.tabsContent}
                     >
+
                       {DAYS.map((day) => (
                         <TouchableOpacity
                           key={day.key}
