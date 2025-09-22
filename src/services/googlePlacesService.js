@@ -104,6 +104,10 @@ class GooglePlacesService {
             },
             photos: place.photos ? place.photos.slice(0,5) : [],
             isOpen: place.opening_hours ? place.opening_hours.open_now : null,
+            rating: place.rating || null,
+            phoneNumber: place.formatted_phone_number || null,
+            website: place.website || null,
+
         };
     }
 

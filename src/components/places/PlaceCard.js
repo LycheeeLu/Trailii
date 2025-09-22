@@ -25,8 +25,16 @@ const PlaceCard = ({place, onClose, visible}) => {
     const loadPlaceDetails = async () => {
         setLoading(true);
         try {
+          // raw data from API
             const details = await googlePlacesService.getPlaceDetails(place.id);
-            setPlaceDetails(details);
+            // formatted data
+            const formattedPlace = googlePlacesService.formatPlaceDetails(details);
+            console.log('=== Debug formatted place ===');
+            console.log('Formatted place:', formattedPlace);
+            console.log('Phone number:', formattedPlace.phoneNumber);
+            console.log('Opening hours:', formattedPlace.openingHours);
+            console.log('=============================');
+            setPlaceDetails(formattedPlace);
 
         } catch (error) {
             console.error('Place Card Error fetching place details:', error);
@@ -175,10 +183,14 @@ const PlaceCard = ({place, onClose, visible}) => {
                                                 <Ionicons name = "time" size = {16} color = {COLORS.primary}/>
                                                 <View style = {styles.hoursContainer}>
                                                     <Text style = {styles.detailText}>Opening Hours:</Text>
-                                                    {displayPlace.openingHours.weekday_text?.map((hour, index) => (
-                                                        <Text key = {index} style = {styles.detailText}>{hour}</Text>
-                                                    )
-                                            )}
+                                                    {displayPlace.openingHours.weekday_text && displayPlace.openingHours.weekday_text.length > 0 ? (
+                                                        displayPlace.openingHours.weekday_text.map((hour, index) => (
+                                                            <Text key = {index} style = {styles.detailText}>
+                                                                {hour}
+                                                            </Text>
+                                                    ) )
+
+                                            ): (<Text style = {styles.detailText}>No opening hours available.</Text>)}
                                                 </View>
                                             </View>
                                         )}
