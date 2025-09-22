@@ -156,22 +156,16 @@ const PlaceCard = ({place, onClose, visible}) => {
                                 </View>
                             )}
 
-
                                 {loading ? (
                                     <Text>Loading details...</Text>
                                 ) : (
                                     <>
-                                        <Text style = {styles.address}>{displayPlace.address}</Text>
+                                        <View style={styles.detailItem}>
+                                          <Ionicons name="location-sharp" size={18} color={COLORS.primary} />
+                                          <Text style={styles.address}>{displayPlace.address}</Text>
+                                        </View>
 
-                                        {displayPlace.phoneNumber && (
-                                            <TouchableOpacity style={styles.detailItem}>
-                                                <Ionicons name="call" size={16} color={COLORS.primary} />
-                                                <Text style = {styles.detailText}>{displayPlace.phoneNumber}</Text>
-                                            </TouchableOpacity>
-                                        )}
-
-
-                                        {displayPlace.website && (
+                                          {displayPlace.website && (
                                             <TouchableOpacity style= { styles.detailItem} onPress = {openWebsite}>
                                                 <Ionicons name = "globe" size = {16} color = {COLORS.primary}/>
                                                 <Text style = {[styles.detailText, styles.link]}>{displayPlace.website}</Text>
@@ -182,7 +176,7 @@ const PlaceCard = ({place, onClose, visible}) => {
                                             <View style = {styles.detailItem}>
                                                 <Ionicons name = "time" size = {16} color = {COLORS.primary}/>
                                                 <View style = {styles.hoursContainer}>
-                                                    <Text style = {styles.detailText}>Opening Hours:</Text>
+                                                    <Text style = {styles.detailText} >Opening Hours:</Text>
                                                     {displayPlace.openingHours.weekday_text && displayPlace.openingHours.weekday_text.length > 0 ? (
                                                         displayPlace.openingHours.weekday_text.map((hour, index) => (
                                                             <Text key = {index} style = {styles.detailText}>
@@ -194,6 +188,14 @@ const PlaceCard = ({place, onClose, visible}) => {
                                                 </View>
                                             </View>
                                         )}
+
+                                           {displayPlace.phoneNumber && (
+                                            <TouchableOpacity style={styles.detailItem}>
+                                                <Ionicons name="call" size={16} color={COLORS.primary} />
+                                                <Text style = {styles.detailText}>{displayPlace.phoneNumber}</Text>
+                                            </TouchableOpacity>
+                                        )}
+
                                     </>
                                     )}
                             </View>
@@ -315,6 +317,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
+    marginBottom: 10,
   },
   ratingContainer: {
     flexDirection: 'row',
@@ -336,7 +339,6 @@ const styles = StyleSheet.create({
   address: {
     fontSize: 16,
     color: COLORS.gray,
-    marginBottom: 20,
   },
   detailItem: {
     flexDirection: 'row',
