@@ -5,7 +5,7 @@ import { useTrip } from "../contexts/TripContext";
 import { ScrollView } from "react-native";
 import { SafeAreaProvider } from "react-native-safe-area-context";
 import { Ionicons } from '@expo/vector-icons';
-
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 
 const DAYS = [
@@ -16,6 +16,8 @@ const DAYS = [
   {key: 'day5', label: 'Day 5'},
   {key: 'day6', label: 'Day 6'},
   {key: 'day7', label: 'Day 7'},
+  {key: 'day8', label: 'Day 8'},
+  {key: 'day9', label: 'Day 9'},
 ]
 
 
@@ -100,16 +102,15 @@ const ItineraryScreen = () =>{
                   {currentTrip ? currentTrip.name : 'My Trip'}
                 </Text>
                 <Text style = {styles.getTripSummary}>
-                  {totalPlaces} places · {formatDuration(totalDuration)} total
+                  {totalPlaces} Places Saved
                 </Text>
               </View>
 
-                   {/* Day Tabs */}
+                   {/* Day Tabs on the Left */}
                   <View style={styles.tabsContainer}>
                     <ScrollView
-                      horizontal
-                      showsHorizontalScrollIndicator={false}
-                      contentContainerStyle={styles.tabsContent}
+                      contentContainerStyle={
+                        styles.tabsContent}
                     >
                       {DAYS.map((day) => (
                         <TouchableOpacity
@@ -131,7 +132,7 @@ const ItineraryScreen = () =>{
                           <Text style={[styles.dayTabCount,
                             activeDay === day.key && styles.activeDayTabCount
                           ]}>
-                              {itinerary[day.key]?.length || 0} places
+                              {itinerary[day.key]?.length || 0} spots
                           </Text>
                         </TouchableOpacity>
                       ))}
@@ -168,7 +169,6 @@ const styles = StyleSheet.create({
     backgroundColor: COLORS.white,
   },
   header: {
-    backgroundColor: COLORS.primary,
     paddingHorizontal: 20,
     paddingVertical: 20,
   },
@@ -183,12 +183,15 @@ const styles = StyleSheet.create({
     color: COLORS.white + 'CC',
   },
   tabsContainer: {
+    flex: 1,
+    alignSelf: "flex-start",
     backgroundColor: COLORS.white,
-    borderBottomWidth: 1,
-    borderBottomColor: COLORS.lightGray,
   },
   tabsContent: {
+    flexGrow: 1,
     paddingHorizontal: 10,
+    justifyContent: "space-around",
+    paddingBottom: 40,
   },
   dayTab: {
     paddingHorizontal: 20,
