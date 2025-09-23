@@ -22,6 +22,38 @@ const app = initializeApp(FIREBASE_CONFIG);
 export const auth = getAuth(app);
 export const db = getFirestore(app);
 
+/*
+example trip document:
+trip123:
+
+    {
+  "title": "Paris Adventure",
+  "ownerId": "user123",
+  "days": {
+    "day1": [
+      {
+        "name": "Eiffel Tower",
+        "location": { "latitude": 48.8584, "longitude": 2.2945 },
+        "visitDuration": 60,
+        "tempId": "1695490000000",
+        "addedAt": "<Timestamp>"
+      }
+    ],
+    "day2": [
+      {
+        "name": "Louvre Museum",
+        "location": { "latitude": 48.8606, "longitude": 2.3376 },
+        "visitDuration": 120,
+        "tempId": "1695491111111",
+        "addedAt": "<Timestamp>"
+      }
+    ]
+  },
+  "createdAt": "<Timestamp>",
+  "updatedAt": "<Timestamp>"
+}
+*/
+
 class FireStoreService {
     constructor(){
         this.tripsCollection = 'trips';
@@ -155,9 +187,14 @@ class FireStoreService {
 
 
       // Remove place from day
-        async removePlaceFromDay(tripId, day, place){
+      // a more robust way would be to delete by tempId  async removePlaceFromDay(tripId, day, tempId)
+        async removePlaceFromDay(tripId, day, placeTemp){
         try {
             const tripRef = doc(db, this.tripsCollection, tripId);
+            await updateDoc(tripRef, {
+                  [`days.${day}`]: arrayRemove(placeTemp),
+                  updatedAt: Timestamp.now()
+            });
 
         } catch (error){
               console.error('Error adding place to day:', error);
@@ -171,6 +208,13 @@ class FireStoreService {
         async updateDayItinerary(tripId, day, places){
         try {
             const tripRef = doc(db, this.tripsCollection, tripId);
+            await updateDoc(tripRef,
+                {
+                    [`day.${day}`]: places,
+                    updatedAt: Timestamp.now()
+                }
+            );
+
 
         } catch (error){
               console.error('Error updating day itinerary:', error);
@@ -182,7 +226,18 @@ class FireStoreService {
          // Update place duration
          async updatePlaceDuration(tripId, day, placeIndex, duration){
         try {
-            const tripRef = doc(db, this.tripsCollection, tripId);
+            // fetch trip JS Object from tripId
+            const trip = await this.getTrip(tripId);
+            /*
+            trip.days["day1"]
+            [
+            { name: "Eiffel Tower", visitDuration: 60, tempId: "111" },
+            { name: "Louvre Museum", visitDuration: 120, tempId: "222" }
+            ]
+            */
+            const dayPlaces = [...trip.days[day]];
+            dayPlaces[placeIndex].visitDuration = duration;
+            await this.updateDayItinerary(tripId, day, dayPlaces)
 
         } catch (error){
               console.error('Error updating day itinerary:', error);
@@ -192,17 +247,17 @@ class FireStoreService {
     }
 
 
-       // Update place duration
-
+       // listen to trip change in real-time from backend to frontend
         subscribeToTrip(tripId, callback){
-        try {
             const tripRef = doc(db, this.tripsCollection, tripId);
+            // onSnapshot -> monitoring API from Firesfore
+            // save the effort of getDoc manually
+            return onSnapshot(tripRef, (doc) =>{
+                if(doc.exists()){
+                    callback(doc.data());
+                }
+            });
 
-        } catch (error){
-              console.error('Error updating day itinerary:', error);
-            throw error;
-
-        }
     }
 }
 

@@ -5,7 +5,6 @@ import { useTrip } from "../contexts/TripContext";
 import { ScrollView } from "react-native";
 import { SafeAreaProvider } from "react-native-safe-area-context";
 import { Ionicons } from '@expo/vector-icons';
-import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 
 const DAYS = [
@@ -16,7 +15,6 @@ const DAYS = [
   {key: 'day5', label: 'Day 5'},
   {key: 'day6', label: 'Day 6'},
   {key: 'day7', label: 'Day 7'},
-  {key: 'day8', label: 'Day 8'},
 ]
 
 

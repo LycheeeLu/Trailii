@@ -13,7 +13,7 @@ const SearchBar = ({onPlaceSelect, currentLocation}) => {
 
     const handleSearch = async (searchQuery) => {
         if (searchQuery.length < 3) {
-            selfetResult([]);
+            setResult([]);
             setShowResults(false);
             return;
         }
