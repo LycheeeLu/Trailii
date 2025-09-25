@@ -158,6 +158,7 @@ class FireStoreService {
     */
     async addPlaceToDay(tripId, day, place){
         try {
+            console.log('Place object:', JSON.stringify(place, null, 2));
             const tripRef = doc(db, this.tripsCollection, tripId);
             const placeWithId = {
                 ...place,

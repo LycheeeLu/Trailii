@@ -123,7 +123,6 @@ class GooglePlacesService {
         longitude: place.geometry.location.lng,
       },
       rating: place.rating,
-      priceLevel: place.price_level,
       types: place.types,
       photos: place.photos || [],
       website: place.website,

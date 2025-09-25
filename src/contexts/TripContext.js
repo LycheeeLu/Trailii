@@ -60,17 +60,19 @@ const tripReducer = (state, action) => {
             return{ ...state, places: [...state.places, action.payload]};
 
         // provided by Firestore
-/*         case 'SAVE_TO_DAY':
+        case 'SAVE_TO_DAY':
+            console.log('💾 SAVE_TO_DAY action:', action.day, action.place);
             return {
                 ...state,
                 itinerary: {
                     ...state.itinerary,
                     [action.day]: [...state.itinerary[action.day], action.place],
                 },
-            }; */
+            };
 
         // provided by Firestore
-/*         case 'REMOVE_FROM_DAY':
+        case 'REMOVE_FROM_DAY':
+            console.log('🗑️ REMOVE_FROM_DAY action:', action.day, action.placeID);
             return {
                 ...state,
                 itinerary: {
@@ -80,7 +82,8 @@ const tripReducer = (state, action) => {
 
                     ),
                 },
-            }; */
+            };
+
         case 'SET_INITIALIZED':
         return { ...state, isInitialized: true, loading: false };
 
@@ -145,21 +148,68 @@ export const TripProvider = ({ children }) => {
         dispatch({type: 'ADD_PLACE', payload: place});
     };
 
-    const saveToDay = (place, day) => {
-        dispatch({type: 'SAVE_TO_DAY',
-                 place, day});
+    const saveToDay = async (place, day) => {
+        try {
+            console.log('💾 Saving place to day:', day, place);
+            if (!state.currentTrip?.id) {
+                throw new Error('No current trip available');
+            }
+            const savedPlace = await FirestoreService.addPlaceToDay(state.currentTrip.id, day, place);
+            console.log('✅ Place saved to Firestore:', savedPlace);
+            dispatch({type: 'SAVE_TO_DAY',
+                    place: savedPlace,
+                    day: day});
+
+            return savedPlace;
+        } catch (error ) {
+            console.error('❌ Error saving place to day:', error);
+            dispatch({type: 'SET_ERROR', payload: error.message});
+            throw error;
+        }
     };
 
-    const removeFromDay = (placeId, day) => {
-        dispatch({type: 'REMOVE_FROM_DAY',
-                    placeID: placeId,
-                     day
-        })
+    const removeFromDay = async (placeId, day) => {
+        try {
+            console.log('Removing place from day:', day, placeId);
+
+            if(!state.currentTrip?.id){
+                throw new Error('No current trip available');
+            }
+            const placeToRemove = state.itinerary[day].find(
+                place => place.tempId === placeId || place.id === placeId
+            );
+
+            if (!placeToRemove) {
+                throw new Error('Place not found in itinerary');
+
+            }
+
+            await FirestoreService.removePlaceFromDay(state.currentTrip.id, day, placeToRemove);
+            console.log('Place removed from Firestore');
+
+            dispatch({
+                type: 'REMOVE_FROM_DAY',
+                placeID: placeId,
+                day: day,
+            });
+        } catch (error) {
+            console.error('Error removing place from day:', error);
+            dispatch({type: 'SET_ERROR', payload: error.message});
+            throw error;
+        }
     };
 
     const updateDayItinerary = async(day, places) =>{
         try{
+            console.log(' Updating day itinerary:', day, places);
             await FirestoreService.updateDayItinerary(state.currentTrip.id, day, places);
+
+            //upload local data immediately
+               dispatch({
+                type: 'UPDATE_DAY',
+                day: day,
+                places: places
+            });
 
         } catch (error) {
             dispatch({type: 'SET_ERROR', payload: error.message});
@@ -168,8 +218,12 @@ export const TripProvider = ({ children }) => {
 
     const updatePlaceDuration = async(day, placeIndex, duration) => {
         try {
+            console.log('Updating place duration:', day, placeIndex, duration);
             await FirestoreService.updatePlaceDuration(state.currentTrip.id, day, placeIndex, duration);
+            const updatedTrip = await FirestoreService.getTrip(state.currentTrip.id);
+            dispatch({type: 'SET_TRIP', payload: updatedTrip});
         } catch(error) {
+            console.error('Error updating place duration:', error);
             dispatch({type: 'SET_ERROR', payload: error.message});
         }
     };
