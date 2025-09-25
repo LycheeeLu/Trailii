@@ -1,11 +1,11 @@
-import React from "react";
+import React, {useState} from "react";
 import {COLORS, SIZES} from "../../constants/config";
 import { useTrip } from "../../contexts/TripContext";
 import ItineraryItem from "./ItineraryItem";
 import MapRouteView from "./MapRouteView";
 import { Ionicons } from "@expo/vector-icons";
 import { FlatList } from "react-native-web";
-import { TouchableOpacity, StyleSheet, View } from "react-native";
+import { TouchableOpacity, StyleSheet, View, Text } from "react-native";
 
 const DayTab = ({day, places, onReorder, estimatedTimes}) => {
     const [showMapRoute, setShowMapRoute] = useState(false);

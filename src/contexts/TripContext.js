@@ -5,15 +5,21 @@ const TripContext = createContext();
 
 const initialState = {
     currentTrip: null,
-    tripId: 'default_trip',// default trip for minimal viable product
+    tripId: null,// initial value
     places: [],
     itinerary:{
         day1: [],
         day2: [],
         day3: [],
+        day4: [],
+        day5: [],
+        day6: [],
+        day7: []
+
     },
     loading: false,
     error: null,
+    isInitialized: false,
 }
 
 const tripReducer = (state, action) => {
@@ -26,14 +32,18 @@ const tripReducer = (state, action) => {
             return {
                 ...state,
                 currentTrip: action.payload,
+                tripId: action.payload?.id || null,
                 itinerary: action.payload.days,
-                loading: false
+                loading: false,
+                error: null,
+                isInitialized: true
             };
         // ? Firesore subscribe auto update?
         case 'UPDATE_ITINERARY':
             return {
                 ...state,
-                itinerary: action.payload,
+                itinerary: { ...state.itinerary, ...action.payload },
+                loading: false
             };
         // provided by firestore
         case 'UPDATE_DAY':
@@ -71,6 +81,10 @@ const tripReducer = (state, action) => {
                     ),
                 },
             }; */
+        case 'SET_INITIALIZED':
+        return { ...state, isInitialized: true, loading: false };
+
+
         default:
             return state;
     }
@@ -80,8 +94,11 @@ export const TripProvider = ({ children }) => {
     const [state, dispatch]= useReducer(tripReducer, initialState);
 
     useEffect(() => {
-        initializeTrip();
-    }, []);
+        if (!state.isInitialized){
+         initializeTrip();
+        }
+
+    }, [state.isInitialized]);
 
     const initializeTrip = async () => {
         dispatch({type: 'SET_LOADING', payload: true});
@@ -89,10 +106,22 @@ export const TripProvider = ({ children }) => {
         try {
             // try get existing trip or create new one
             let trip;
-            try {
+            if (state.tripId && state.tripId !== null){
+                try {
                 trip = await FirestoreService.getTrip(state.tripId);
 
-            } catch (error) {
+                } catch (error) {
+                console.error('Full error object:', error);
+                console.error('Error stack:', error.stack);
+                console.error('Error message:', error.message);
+
+                console.log('Trip not found, creating new one...');
+                trip = null;
+                }
+            }
+
+            if (!trip){
+                console.log('Creating new default trip...');
                 // create default trip it it doesnt exist
                 trip = await FirestoreService.createTrip('default_user', {
                     name: 'My Traili Trip',
@@ -101,13 +130,13 @@ export const TripProvider = ({ children }) => {
                 });
             }
             dispatch({type: 'SET_TRIP', payload: trip});
-
             // subscribe to real-time updates
             FirestoreService.subscribeToTrip(trip.id, (updatedTrip) => {
                 dispatch({type: 'SET_TRIP', payload: updatedTrip});
 
             });
         } catch (error) {
+            console.error('Error in initializeTrip:', error);
             dispatch({type: 'SET_ERROR', payload: error.message});
         }
     };

@@ -1,5 +1,6 @@
 
 import { getFirestore,
+        doc,
         Timestamp,
         onSnapshot,
         setDoc,
@@ -53,7 +54,9 @@ class FireStoreService {
     // create a new trip
     async createTrip(userId, tripData){
         try{
+            console.log('🔵 Creating trip for userId:', userId);
             const tripId = `trip_${Date.now()}_${userId}`;
+            console.log("🔵Created trip:", tripId);
             const trip = {
                 id: tripId,
                 userId,
@@ -75,6 +78,7 @@ class FireStoreService {
                 updatedAt: Timestamp.now(),
             };
             await setDoc(doc(db, this.tripsCollection, tripId), trip);
+            console.log("✅ Created trip with ID:", tripId);
             return trip;
         } catch (error) {
             console.error ('Firebase Service Error creating trip:', error);
@@ -85,13 +89,17 @@ class FireStoreService {
     // get trip by ID
     async getTrip(tripId) {
         try{
+            console.log('🔍 Attempting to fetch trip with ID:', tripId);
+            console.log('🔍 Collection:', this.tripsCollection);
+
             const docRef = doc(db, this.tripsCollection, tripId);
             const docSnap = await getDoc(docRef);
+            console.log("fetching trip:", tripId);
 
             if (docSnap.exists()){
                 return docSnap.data();
             } else {
-                throw new Error ('Firebase Service getTrip(): trip not found');
+                throw new Error (`Firebase Service getTrip(): trip not found with ID: ${tripId}` );
             }
         } catch (error) {
             console.error ("error getting trip: ", error);
@@ -198,7 +206,7 @@ class FireStoreService {
             const tripRef = doc(db, this.tripsCollection, tripId);
             await updateDoc(tripRef,
                 {
-                    [`day.${day}`]: places,
+                    [`days.${day}`]: places,
                     updatedAt: Timestamp.now()
                 }
             );
