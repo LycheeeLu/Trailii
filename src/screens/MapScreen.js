@@ -86,6 +86,7 @@ const MapScreen = () => {
      }
 
      const handleMapPress = (event) => {
+        console.log("Handle Map pressed!", event);
         setShowPlaceCard(false);
 
         //maybe reverse geocode?

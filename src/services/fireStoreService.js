@@ -251,7 +251,10 @@ class FireStoreService {
             // save the effort of getDoc manually
             return onSnapshot(tripRef, (doc) =>{
                 if(doc.exists()){
+                    console.log("Firestore document snapshot:", doc.id, doc.data());
                     callback(doc.data());
+                } else {
+                    console.log("Document does not exist:", doc.id);
                 }
             });
 

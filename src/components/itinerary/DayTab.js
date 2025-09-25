@@ -4,8 +4,7 @@ import { useTrip } from "../../contexts/TripContext";
 import ItineraryItem from "./ItineraryItem";
 import MapRouteView from "./MapRouteView";
 import { Ionicons } from "@expo/vector-icons";
-import { FlatList } from "react-native-web";
-import { TouchableOpacity, StyleSheet, View, Text } from "react-native";
+import { FlatList, TouchableOpacity, StyleSheet, View, Text } from "react-native";
 
 const DayTab = ({day, places, onReorder, estimatedTimes}) => {
     const [showMapRoute, setShowMapRoute] = useState(false);

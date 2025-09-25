@@ -69,7 +69,7 @@ const ItineraryItem = ({
                     styles={styles.dragHandle}
                     onPressIn={()=> onDragStart && onDragStart(index)}
                     >
-                        <Ionicons name="reorder-tow"
+                        <Ionicons name="swap-vertical"
                             size={20}
                             color={COLORS.gray}
                             />

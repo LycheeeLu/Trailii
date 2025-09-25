@@ -1,4 +1,4 @@
-import React, { createContext, useState, useEffect, useReducer, useContext } from 'react';
+import React, { createContext, useState, useEffect, useReducer, useContext, useRef } from 'react';
 import FirestoreService  from '../services/fireStoreService';
 
 const TripContext = createContext();
@@ -39,13 +39,23 @@ const tripReducer = (state, action) => {
                 isInitialized: true
             };
         // ? Firesore subscribe auto update?
-        case 'UPDATE_ITINERARY':
+/*         case 'UPDATE_ITINERARY':
             return {
                 ...state,
                 itinerary: { ...state.itinerary, ...action.payload },
                 loading: false
-            };
+            }; */
         // provided by firestore
+        case 'UPDATE_TRIP_FROM_FIRESTORE':
+            // only update from Firestore, no local storage
+            return {
+                ...state,
+                currentTrip: action.payload,
+                tripId: action.payload?.id || null,
+                itinerary: action.payload?.days || state.itinerary,
+                loading: false,
+                error: null
+            };
         case 'UPDATE_DAY':
             return {
                 ...state,
@@ -95,6 +105,9 @@ const tripReducer = (state, action) => {
 
 export const TripProvider = ({ children }) => {
     const [state, dispatch]= useReducer(tripReducer, initialState);
+    const unsubscribeRef = useRef(null);
+    const isLocalUpdateRef = useRef(false);
+
 
     useEffect(() => {
         if (!state.isInitialized){
@@ -133,9 +146,22 @@ export const TripProvider = ({ children }) => {
                 });
             }
             dispatch({type: 'SET_TRIP', payload: trip});
+
+            // cleaar previous subscription
+                if (unsubscribeRef.current) {
+                unsubscribeRef.current();
+            }
+
             // subscribe to real-time updates
-            FirestoreService.subscribeToTrip(trip.id, (updatedTrip) => {
-                dispatch({type: 'SET_TRIP', payload: updatedTrip});
+            unsubscribeRef.current = FirestoreService.subscribeToTrip(trip.id, (updatedTrip) => {
+                console.log('🔔 Real-time update received');
+                if (isLocalUpdateRef.current) {
+                    console.log('⏭️  Skipping real-time update (local operation)');
+                    isLocalUpdateRef.current = false;
+                    return;
+                }
+                console.log('📄 Updating from Firestore');
+                dispatch({type: 'UPDATE_TRIP_FROM_FIRESTORE', payload: updatedTrip});
 
             });
         } catch (error) {
@@ -143,6 +169,15 @@ export const TripProvider = ({ children }) => {
             dispatch({type: 'SET_ERROR', payload: error.message});
         }
     };
+
+    // clear all subscription
+        useEffect(() => {
+        return () => {
+            if (unsubscribeRef.current) {
+                unsubscribeRef.current();
+            }
+        };
+    }, []);
 
     const addPlace = (place) => {
         dispatch({type: 'ADD_PLACE', payload: place});
@@ -154,15 +189,32 @@ export const TripProvider = ({ children }) => {
             if (!state.currentTrip?.id) {
                 throw new Error('No current trip available');
             }
+            const optimisticPlace = {
+                ...place,
+                tempId: `${place.id || 'place'}_${Date.now()}`,
+                visitDuration: place.visitDuration || 60,
+                addedAt: new Date().toISOString() // 临时使用 ISO 字符串
+            };
+
+            dispatch({
+                type: 'SAVE_TO_DAY',
+                day: day,
+                place: optimisticPlace
+            });
+
+            isLocalUpdateRef.current = true;
+
             const savedPlace = await FirestoreService.addPlaceToDay(state.currentTrip.id, day, place);
             console.log('✅ Place saved to Firestore:', savedPlace);
-            dispatch({type: 'SAVE_TO_DAY',
-                    place: savedPlace,
-                    day: day});
+
+            setTimeout(() => {
+                isLocalUpdateRef.current = false;
+            }, 1000);
 
             return savedPlace;
         } catch (error ) {
             console.error('❌ Error saving place to day:', error);
+            isLocalUpdateRef.current = false;
             dispatch({type: 'SET_ERROR', payload: error.message});
             throw error;
         }
@@ -184,14 +236,23 @@ export const TripProvider = ({ children }) => {
 
             }
 
-            await FirestoreService.removePlaceFromDay(state.currentTrip.id, day, placeToRemove);
-            console.log('Place removed from Firestore');
-
-            dispatch({
+           dispatch({
                 type: 'REMOVE_FROM_DAY',
                 placeID: placeId,
                 day: day,
             });
+
+             isLocalUpdateRef.current = true;
+
+            await FirestoreService.removePlaceFromDay(state.currentTrip.id, day, placeToRemove);
+            console.log('Place removed from Firestore');
+
+            setTimeout(() => {
+                isLocalUpdateRef.current = false;
+            }, 1000);
+
+
+
         } catch (error) {
             console.error('Error removing place from day:', error);
             dispatch({type: 'SET_ERROR', payload: error.message});
@@ -202,7 +263,7 @@ export const TripProvider = ({ children }) => {
     const updateDayItinerary = async(day, places) =>{
         try{
             console.log(' Updating day itinerary:', day, places);
-            await FirestoreService.updateDayItinerary(state.currentTrip.id, day, places);
+
 
             //upload local data immediately
                dispatch({
@@ -211,6 +272,12 @@ export const TripProvider = ({ children }) => {
                 places: places
             });
 
+             isLocalUpdateRef.current = true;
+            await FirestoreService.updateDayItinerary(state.currentTrip.id, day, places);
+
+            setTimeout(() => {
+                isLocalUpdateRef.current = false;
+            }, 1000);
         } catch (error) {
             dispatch({type: 'SET_ERROR', payload: error.message});
         }
@@ -219,9 +286,13 @@ export const TripProvider = ({ children }) => {
     const updatePlaceDuration = async(day, placeIndex, duration) => {
         try {
             console.log('Updating place duration:', day, placeIndex, duration);
+             isLocalUpdateRef.current = true;
             await FirestoreService.updatePlaceDuration(state.currentTrip.id, day, placeIndex, duration);
             const updatedTrip = await FirestoreService.getTrip(state.currentTrip.id);
             dispatch({type: 'SET_TRIP', payload: updatedTrip});
+                setTimeout(() => {
+                isLocalUpdateRef.current = false;
+            }, 1000);
         } catch(error) {
             console.error('Error updating place duration:', error);
             dispatch({type: 'SET_ERROR', payload: error.message});
