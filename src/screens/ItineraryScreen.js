@@ -5,6 +5,7 @@ import { useTrip } from "../contexts/TripContext";
 import { ScrollView } from "react-native";
 import { SafeAreaProvider } from "react-native-safe-area-context";
 import { Ionicons } from '@expo/vector-icons';
+import DayTab from "../components/itinerary/DayTab";
 
 
 const DAYS = [
@@ -50,9 +51,16 @@ const ItineraryScreen = () =>{
     return places.map((place) => {
       const arrivalTime = currentTime;
       const departureTime = currentTime + (place.visitDuration || 60);
-      currentTime = departureTime + 30;
+
       // assume 1 hour per place
       //assume 30 mins travel time between places
+
+       // Add travel time to next place (except for last place)
+      if (index < places.length - 1) {
+        currentTime = departureTime + 30;
+      } else {
+        currentTime = departureTime;
+      }
 
       return {
         arrival: formatTime(arrivalTime),
@@ -60,6 +68,21 @@ const ItineraryScreen = () =>{
       }
     })
   }
+
+  const getDayInfo = (dayKey) => {
+    const dayPlaces = itinerary[dayKey] || [];
+    const dayDuration = dayPlaces.reduce((sum, place) => sum + (place.visitDuration || 60), 0);
+    const estimatedTimes = getEstimatedTimes(dayPlaces);
+
+    return {
+      places: dayPlaces,
+      duration: dayDuration,
+      count: dayPlaces.length,
+      startTime: estimatedTimes.length > 0 ? estimatedTimes[0].arrival : null,
+      endTime: estimatedTimes.length > 0 ? estimatedTimes[estimatedTimes.length - 1].departure : null
+
+    };
+  };
 
   // { totalPlaces: 3, totalDuration: 270 }
   /* const itinerary = {
@@ -98,57 +121,112 @@ const ItineraryScreen = () =>{
                 <Text style={styles.tripTitle}>
                   {currentTrip ? currentTrip.name : 'My Trip'}
                 </Text>
-                <Text style = {styles.getTripSummary}>
+                <Text style = {styles.tripSummary}>
                   {totalPlaces} Places Saved
                 </Text>
+
+                {/* Quick stats */}
+                <View style={styles.quickStats}>
+                {DAYS.map((day) => {
+                  const dayInfo = getDayInfo(day.key);
+                  return (
+                    <View key={day.key} style={styles.quickStat}>
+                      <Text style={styles.quickStatLabel}>{day.label}</Text>
+                      <Text style={styles.quickStatValue}>{dayInfo.count}</Text>
+                    </View>
+                  );
+                })}
+              </View>
               </View>
 
-
+              <View style={{flex: 1, flexDirection: "row"}}>
                    {/* Day Tabs on the Left */}
                   <View style={styles.tabsContainer}>
+                  {/*vertical*/}
                     <ScrollView
                       contentContainerStyle={
                         styles.tabsContent}
                     >
-
-                      {DAYS.map((day) => (
-                        <TouchableOpacity
+                      {DAYS.map((day) => {
+                        const dayInfo = getDayInfo(day.key);
+                        const isActive = activeDay === day.ley;
+                        return(
+                          <TouchableOpacity
                           key={day.key}
                           style={[
                             styles.tab,
-                            activeDay === day.key && styles.activeTab,
+                            isActive && styles.activeDayTab,
                           ]}
-                          onPress={() => setActiveDay(day.key)}
-                        >
-                          <Text
-                            style={[
-                              styles.tabText,
-                              activeDay === day.key && styles.activeTabText,
-                            ]}
-                          >
+                          onPress={() => setActiveDay(day.key)}>
+
+                            <Text
+                              style={[
+                                styles.dayTabText,
+                                isActive && styles.activeDayTabText,
+                              ]}
+                            >
                             {day.label}
-                          </Text>
-                          <Text style={[styles.dayTabCount,
-                            activeDay === day.key && styles.activeDayTabCount
-                          ]}>
-                              {itinerary[day.key]?.length || 0} spots
-                          </Text>
-                        </TouchableOpacity>
-                      ))}
+                            </Text>
+
+                            <View style={styles.dayTabMeta}>
+                              <Ionicons name="location" size={16} color={COLORS.primary} />
+                              <Text style={[
+                                styles.dayTabCount,
+                                isActive && styles.activeDayTabCount
+                              ]}>
+                                {dayInfo.count} places
+                              </Text>
+
+                              <Ionicons name="time" size={16} color={COLORS.primary} />
+                              {dayInfo.duration > 0 && (
+                                <Text style={[
+                                  styles.dayTabDuration,
+                                  isActive && styles.activeDayTabDuration
+                                ]}>
+                                  {formatDuration(dayInfo.duration)}
+                                </Text>
+                              )}
+
+                              <Ionicons name="calendar" size={16} color={COLORS.primary} />
+                              {dayInfo.startTime && dayInfo.endTime && (
+                                <Text style={[
+                                  styles.dayTabTime,
+                                  isActive && styles.activeDayTabTime
+                                ]}>
+                                  {dayInfo.startTime} - {dayInfo.endTime}
+                                </Text>
+                              )}
+                            </View>
+
+                             {/* Active indicator */}
+                             {isActive && <View style={styles.activeIndicator} />}
+                            </TouchableOpacity>
+
+                        );
+                      })}
                     </ScrollView>
                     </View>
 
-                    {/* Active Day Content */}
+                    {/* Active Day Content on the right */}
                     <View style={styles.contentContainer}>
                       <Text>imagine here is daytab</Text>
+                      <DayTab
+                        day={activeDay}
+                        places={itinerary[activeDay] || []}
+                        onReorder={handleReorder}
+                        estimatedTimes={getEstimatedTimes(itinerary[activeDay] || [])}
+                      />
                     </View>
 
 
+                </View>
+
                      {/* Quick Add Button */}
-                     <TouchableOpacity style={styles.quickAddButton}>
+{/*                      <TouchableOpacity style={styles.quickAddButton}>
                       <Ionicons name="add-circle" size={24} color={COLORS.white} />
                         <Text style={styles.quickAddText}> Quick Add</Text>
-                     </TouchableOpacity>
+                     </TouchableOpacity> */}
+
       </SafeAreaProvider>
 
     );
@@ -182,6 +260,23 @@ const styles = StyleSheet.create({
     fontSize: 14,
     color: COLORS.white + 'CC',
   },
+  quickStats: {
+    flexDirection: 'row',
+    justifyContent: 'space-around',
+  },
+  quickStat: {
+    alignItems: 'center',
+  },
+  quickStatLabel: {
+    fontSize: 12,
+    color: COLORS.white + 'AA',
+    marginBottom: 2,
+  },
+  quickStatValue: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    color: COLORS.white,
+  },
   tabsContainer: {
     flex: 1,
     alignSelf: "flex-start",
@@ -200,6 +295,7 @@ const styles = StyleSheet.create({
     backgroundColor: COLORS.lightGray,
     alignItems: 'center',
     minWidth: 80,
+    position: 'relative',
   },
   activeDayTab: {
     backgroundColor: COLORS.primary,
@@ -212,6 +308,11 @@ const styles = StyleSheet.create({
   activeDayTabText: {
     color: COLORS.white,
   },
+ dayTabMeta: {
+    flexDirection: "column",
+    alignItems: 'flex-start',
+    marginTop: 4
+  },
   dayTabCount: {
     fontSize: 12,
     color: COLORS.gray,
@@ -220,10 +321,36 @@ const styles = StyleSheet.create({
   activeDayTabCount: {
     color: COLORS.white + 'CC',
   },
+  dayTabDuration: {
+    fontSize: 10,
+    color: COLORS.gray,
+    fontWeight: '500',
+    marginBottom: 2,
+  },
+  activeDayTabDuration: {
+    color: COLORS.white + 'AA',
+  },
+  dayTabTime: {
+    fontSize: 9,
+    color: COLORS.gray,
+    fontWeight: '400',
+  },
+  activeDayTabTime: {
+    color: COLORS.white + '99',
+  },
+  activeIndicator: {
+    position: 'absolute',
+    bottom: -1,
+    left: 0,
+    right: 0,
+    height: 3,
+    backgroundColor: COLORS.white,
+    borderRadius: 1.5,
+  },
   contentContainer: {
     flex: 1,
   },
-  quickAddButton: {
+/*   quickAddButton: {
     position: 'absolute',
     bottom: 20,
     right: 20,
@@ -238,12 +365,12 @@ const styles = StyleSheet.create({
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.25,
     shadowRadius: 3.84,
-  },
-  quickAddText: {
+  }, */
+/*   quickAddText: {
     color: COLORS.white,
     fontWeight: '600',
     marginLeft: 8,
-  },
+  }, */
 });
 
 export default ItineraryScreen;
