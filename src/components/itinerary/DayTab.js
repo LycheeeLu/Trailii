@@ -4,7 +4,7 @@ import { useTrip } from "../../contexts/TripContext";
 import ItineraryItem from "./ItineraryItem";
 import { Ionicons } from "@expo/vector-icons";
 import { FlatList } from "react-native-web";
-import { TouchableOpacity } from "react-native";
+import { TouchableOpacity, StyleSheet } from "react-native";
 
 const DayTab = ({day, places, onReorder, estimatedTimes}) => {
     const {removeFromDay, updatePlaceDuraiton} = useTrip();
