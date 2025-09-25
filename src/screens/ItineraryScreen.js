@@ -48,7 +48,7 @@ const ItineraryScreen = () =>{
   //simple mock time estimation
   const getEstimatedTimes = (places) => {
     let currentTime = 10 * 60; // start at 10:00 AM in minutes
-    return places.map((place) => {
+    return places.map((place, index) => {
       const arrivalTime = currentTime;
       const departureTime = currentTime + (place.visitDuration || 60);
 
