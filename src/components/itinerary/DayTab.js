@@ -2,11 +2,13 @@ import React from "react";
 import {COLORS, SIZES} from "../../constants/config";
 import { useTrip } from "../../contexts/TripContext";
 import ItineraryItem from "./ItineraryItem";
+import MapRouteView from "./MapRouteView";
 import { Ionicons } from "@expo/vector-icons";
 import { FlatList } from "react-native-web";
-import { TouchableOpacity, StyleSheet } from "react-native";
+import { TouchableOpacity, StyleSheet, View } from "react-native";
 
 const DayTab = ({day, places, onReorder, estimatedTimes}) => {
+    const [showMapRoute, setShowMapRoute] = useState(false);
     const {removeFromDay, updatePlaceDuraiton} = useTrip();
 
     const handleRemovePlace = (place) => {
@@ -80,6 +82,14 @@ const DayTab = ({day, places, onReorder, estimatedTimes}) => {
                     <Text style={styles.summaryText}>
                         {places.length} places • {formatTotalTime(getTotalDuration())} total
                     </Text>
+
+                    <TouchableOpacity
+                    style={styles.mapButton}
+                    onPress={() => setShowMapRoute(true)}
+                    >
+                    <Ionicons name="map-outline" size={16} color={COLORS.primary} />
+                    <Text style={styles.mapButtonText}>View Route</Text>
+                    </TouchableOpacity>
              </View>
 
              {/* Places list */}
@@ -129,6 +139,14 @@ const DayTab = ({day, places, onReorder, estimatedTimes}) => {
                  showsVerticalScrollIndicator={false}
                 contentContainerStyle={styles.listContainer}
             />
+
+                {/* Map Route Modal */}
+                <MapRouteView
+                    visible={showMapRoute}
+                    onClose={() => setShowMapRoute(false)}
+                    places={places}
+                    day={day}
+                />
         </View>
 
     );
@@ -190,6 +208,20 @@ const styles = StyleSheet.create({
     shadowOffset: { width: 0, height: 1 },
     shadowOpacity: 0.22,
     shadowRadius: 2.22,
+  },
+  mapButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: COLORS.lightGray,
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+    borderRadius: 15,
+  },
+  mapButtonText: {
+    fontSize: 12,
+    color: COLORS.primary,
+    marginLeft: 4,
+    fontWeight: '500',
   },
 });
 
