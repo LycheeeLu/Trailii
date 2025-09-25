@@ -119,14 +119,12 @@ const ItineraryScreen = () =>{
              {/* Trip Header */}
               <View style={styles.header}>
                 <Text style={styles.tripTitle}>
-                  {currentTrip ? currentTrip.name : 'My Trip'}
-                </Text>
-                <Text style = {styles.tripSummary}>
-                  {totalPlaces} Places Saved
+                     <Ionicons name="location" size={24} color={COLORS.primary} />
+                      {currentTrip ? currentTrip.name : 'My Trip'} : {totalPlaces} Places
                 </Text>
 
                 {/* Quick stats */}
-                <View style={styles.quickStats}>
+{/*                 <View style={styles.quickStats}>
                 {DAYS.map((day) => {
                   const dayInfo = getDayInfo(day.key);
                   return (
@@ -136,7 +134,7 @@ const ItineraryScreen = () =>{
                     </View>
                   );
                 })}
-              </View>
+                </View> */}
               </View>
 
               <View style={{flex: 1, flexDirection: "row"}}>
@@ -169,7 +167,6 @@ const ItineraryScreen = () =>{
                             </Text>
 
                             <View style={styles.dayTabMeta}>
-                              <Ionicons name="location" size={16} color={COLORS.primary} />
                               <Text style={[
                                 styles.dayTabCount,
                                 isActive && styles.activeDayTabCount
@@ -177,7 +174,6 @@ const ItineraryScreen = () =>{
                                 {dayInfo.count} places
                               </Text>
 
-                              <Ionicons name="time" size={16} color={COLORS.primary} />
                               {dayInfo.duration > 0 && (
                                 <Text style={[
                                   styles.dayTabDuration,
@@ -187,14 +183,15 @@ const ItineraryScreen = () =>{
                                 </Text>
                               )}
 
-                              <Ionicons name="calendar" size={16} color={COLORS.primary} />
                               {dayInfo.startTime && dayInfo.endTime && (
                                 <Text style={[
                                   styles.dayTabTime,
                                   isActive && styles.activeDayTabTime
                                 ]}>
                                   {dayInfo.startTime} - {dayInfo.endTime}
+
                                 </Text>
+
                               )}
                             </View>
 
@@ -209,7 +206,6 @@ const ItineraryScreen = () =>{
 
                     {/* Active Day Content on the right */}
                     <View style={styles.contentContainer}>
-                      <Text>imagine here is daytab</Text>
                       <DayTab
                         day={activeDay}
                         places={itinerary[activeDay] || []}
@@ -244,11 +240,11 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: COLORS.white,
+    backgroundColor: COLORS.primaryLight,
   },
   header: {
     paddingHorizontal: 20,
-    paddingVertical: 20,
+    paddingVertical: 10,
   },
   tripTitle: {
     fontSize: 24,
@@ -258,7 +254,7 @@ const styles = StyleSheet.create({
   },
   tripSummary: {
     fontSize: 14,
-    color: COLORS.white + 'CC',
+    color: COLORS.primaryDark + 'CC',
   },
   quickStats: {
     flexDirection: 'row',
@@ -269,16 +265,16 @@ const styles = StyleSheet.create({
   },
   quickStatLabel: {
     fontSize: 12,
-    color: COLORS.white + 'AA',
+    color: COLORS.black + 'AA',
     marginBottom: 2,
   },
   quickStatValue: {
     fontSize: 18,
     fontWeight: 'bold',
-    color: COLORS.white,
+    color: COLORS.black,
   },
   tabsContainer: {
-    flex: 1,
+    width: 80,
     alignSelf: "flex-start",
     backgroundColor: COLORS.white,
   },
@@ -294,7 +290,7 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     backgroundColor: COLORS.lightGray,
     alignItems: 'center',
-    minWidth: 80,
+    minWidth: 60,
     position: 'relative',
   },
   activeDayTab: {
