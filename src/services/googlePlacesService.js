@@ -140,14 +140,6 @@ class GooglePlacesService {
         `key=${this.apikey}`;
     }
 
-    // get multiple photo for placeCard
-    async getMultiplePhotoUrls(placeId, maxWidth = 400) {
-    const placeDetails = await this.getPlaceDetails(placeId);
-    // get photos specifically
-    const photos = placeDetails?.photos || [];
-    return photos.map(photo => this.getPhotoUrl(photo.photo_reference, maxWidth));
-}
-
 }
 
 export default new GooglePlacesService();
