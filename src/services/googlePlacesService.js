@@ -134,9 +134,9 @@ class GooglePlacesService {
 
     // get photo url from photo
     getPhotoUrl(photoReference, maxWidth = 400) {
-        return `${this.baseUrl}/place/photo?` +
+        return `${this.baseUrl}/photo?` +
         `maxwidth=${maxWidth}&` +
-        `photoreference=${photoReference}&` +
+        `photo_reference=${photoReference}&` +
         `key=${this.apikey}`;
     }
 

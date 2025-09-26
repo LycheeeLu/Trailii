@@ -161,6 +161,7 @@ const ItineraryScreen = () =>{
                               style={[
                                 styles.dayTabText,
                                 isActive && styles.activeDayTabText,
+
                               ]}
                             >
                             {day.label}
@@ -174,14 +175,14 @@ const ItineraryScreen = () =>{
                                 {dayInfo.count} places
                               </Text>
 
-                              {dayInfo.duration > 0 && (
+{/*                               {dayInfo.duration > 0 && (
                                 <Text style={[
                                   styles.dayTabDuration,
                                   isActive && styles.activeDayTabDuration
                                 ]}>
                                   {formatDuration(dayInfo.duration)}
                                 </Text>
-                              )}
+                              )} */}
 
                               {dayInfo.startTime && dayInfo.endTime && (
                                 <Text style={[
@@ -276,7 +277,7 @@ const styles = StyleSheet.create({
   tabsContainer: {
     width: 80,
     alignSelf: "flex-start",
-    backgroundColor: COLORS.white,
+    backgroundColor: COLORS.surface,
   },
   tabsContent: {
     flexGrow: 1,
@@ -288,18 +289,17 @@ const styles = StyleSheet.create({
     paddingVertical: 15,
     marginHorizontal: 5,
     borderRadius: 10,
-    backgroundColor: COLORS.lightGray,
     alignItems: 'center',
     minWidth: 60,
     position: 'relative',
   },
   activeDayTab: {
-    backgroundColor: COLORS.primary,
+    backgroundColor: COLORS.background,
   },
   dayTabText: {
     fontSize: 14,
     fontWeight: '600',
-    color: COLORS.gray,
+    color: COLORS.primary,
   },
   activeDayTabText: {
     color: COLORS.white,
@@ -313,6 +313,7 @@ const styles = StyleSheet.create({
     fontSize: 12,
     color: COLORS.gray,
     marginTop: 2,
+    marginBottom: 2
   },
   activeDayTabCount: {
     color: COLORS.white + 'CC',

@@ -78,16 +78,16 @@ const DayTab = ({day, places, onReorder, estimatedTimes}) => {
         <View style={styles.container}>
               {/* Day summary */}
              <View style={styles.summaryContainer}>
-                    <Text style={styles.summaryText}>
+{/*                     <Text style={styles.summaryText}>
                         {places.length} places • {formatTotalTime(getTotalDuration())} total
-                    </Text>
+                    </Text> */}
 
                     <TouchableOpacity
                     style={styles.mapButton}
                     onPress={() => setShowMapRoute(true)}
                     >
                     <Ionicons name="map-outline" size={16} color={COLORS.primary} />
-                    <Text style={styles.mapButtonText}>View Route</Text>
+                    <Text style={styles.mapButtonText}> View Daily Route</Text>
                     </TouchableOpacity>
              </View>
 

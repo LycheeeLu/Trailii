@@ -36,20 +36,16 @@ const ItineraryItem = ({
     };
 
     const getImageUrl = () => {
-        if(place.photos && place.photos.length > 0) {
-            return GooglePlacesService.getPhotoUrl(place.photos[0], 100);
-        }
+      const photoRef = place.photos[0].photo_reference || place.photos[0].photoreference;
+      const url = GooglePlacesService.getPhotoUrl(photoRef, 400);
+        console.log('Generated photo URL:', url);
+        return url;
+/*         if(place.photos && place.photos.length > 0) {
+            return GooglePlacesService.getPhotoUrl(place.photos[0].photoreference, 100);
+        } */
         return null;
     };
 
-    const formatTime = (minutes) => {
-        const hours = Math.floor(minutes/ 60);
-        const mins = minutes % 60;
-        if (hours > 0) {
-            return mins > 0 ? `${hours}h ${mins}m` : `${hours}h`;
-        }
-        return `${mins}m`;
-    };
 
     return (
         <View style = {styles.container}>
@@ -65,7 +61,7 @@ const ItineraryItem = ({
 
              <View style={styles.card}>
                   {/* Drag handle */}
-                  <TouchableOpacity
+{/*                   <TouchableOpacity
                     styles={styles.dragHandle}
                     onPressIn={()=> onDragStart && onDragStart(index)}
                     >
@@ -73,12 +69,12 @@ const ItineraryItem = ({
                             size={20}
                             color={COLORS.gray}
                             />
-                    </TouchableOpacity>
+                    </TouchableOpacity> */}
 
                     {/* Place image */}
                     <View style={styles.imageContainer}>
                         {getImageUrl() ? (
-                            <Image source={{uir: getImageUrl()}}
+                            <Image source={{url: getImageUrl()}}
                             style={styles.placeImage}>
                             </Image>
                         ) : (
@@ -99,7 +95,7 @@ const ItineraryItem = ({
                             {place.name}
                     </Text>
                     <Text style={styles.placeAddress}
-                        numberOfLines={1}>
+                        numberOfLines={3}>
                             {place.address}
                         </Text>
 
@@ -180,7 +176,7 @@ const styles = StyleSheet.create({
     marginBottom: 2,
   },
   placeAddress: {
-    fontSize: 14,
+    fontSize: 10,
     color: COLORS.gray,
     marginBottom: 8,
   },

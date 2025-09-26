@@ -64,8 +64,17 @@ const PlaceCard = ({place, onClose, visible}) => {
         }
     };
 
-    const getPhotoUrl = (photoRef) => {
-        return googlePlacesService.getPhotoUrl(photoRef.photo_reference, 400);
+    const getPhotoUrl = () => {
+      if (place.photos && place.photos.length > 0) {
+        const photoRef = place.photos[0].photo_reference || place.photos[0].photoreference;
+        const url = googlePlacesService.getPhotoUrl(photoRef, 400);
+        console.log('Generated photo URL:', url); // 调试用
+        return url;
+    }
+/*        if (place.photos && place.photos.length > 0) {
+        return googlePlacesService.getPhotoUrl(place.photos[0].photo_reference, 400);
+       } */
+       return null;
     };
 
     if (!visible || !place) return null;
@@ -203,12 +212,12 @@ const PlaceCard = ({place, onClose, visible}) => {
 
                         {activeTab === 'photos' && (
                             <View style={styles.photosTab}>
-                                {displayPlace.photo && displayPlace.photos.length > 0 ? (
+                                {displayPlace.photos && displayPlace.photos.length > 0 ? (
                                     <ScrollView horizontal showsHorizontalScrollIndicator={false}>
                                         {displayPlace.photos.slice(0,5).map((photo, index) => (
                                             <Image
                                                 key={index}
-                                                source={{ uri: getPhotoUrl(photo) }}
+                                                source={{ uri: getPhotoUrl(photo.photo_reference) }}
                                                 style={styles.photo}
                                             />
                                         ))}
