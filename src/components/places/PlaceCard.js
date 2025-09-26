@@ -13,6 +13,7 @@ const PlaceCard = ({place, onClose, visible}) => {
     const [placeDetails, setPlaceDetails] = useState(null);
     const [loading, setLoading] = useState(false);
     const { saveToDay, itinerary } = useTrip();
+    const [photoUrls, setPhotoUrls] = useState([]);
 
 
     useEffect(() => {
@@ -35,6 +36,16 @@ const PlaceCard = ({place, onClose, visible}) => {
             console.log('Opening hours:', formattedPlace.openingHours);
             console.log('=============================');
             setPlaceDetails(formattedPlace);
+
+            // load 6 pictuers
+            if (details?.photos && details.photos.length > 0) {
+            const urls = details.photos.slice(0, 6).map(photo =>
+                googlePlacesService.getPhotoUrl(photo.photo_reference, 400)
+            );
+              getPhotoUrls(urls);
+            } else {
+              getPhotoUrls([]);
+            }
 
         } catch (error) {
             console.error('Place Card Error fetching place details:', error);
@@ -64,17 +75,25 @@ const PlaceCard = ({place, onClose, visible}) => {
         }
     };
 
-    const getPhotoUrl = () => {
-      if (place.photos && place.photos.length > 0) {
-        const photoRef = place.photos[0].photo_reference || place.photos[0].photoreference;
-        const url = googlePlacesService.getPhotoUrl(photoRef, 400);
-        console.log('Generated photo URL:', url); // 调试用
-        return url;
+    // return  pictures
+    const getPhotoUrls = (urls) => {
+      setPhotoUrls(urls);
+      console.log('photo urls:', urls);
+/*       if (place.place_id) {
+      const urls = googlePlacesService.getMultiplePhotoUrls(place.place_id, 400);
+      console.log('generated photo urls: ', urls);
+      return urls;
+      }
+      return []; */
+/*       if (place.photos && place.photos.length > 0) {
+        return place.photos.slice(0,6).map(photo=>{
+          const photoRef = photo.photo_reference || photo.photoreference;
+          const url = googlePlacesService.getMultiplePhotoUrls(photoRef, 400);
+          console.log('generated photo url: ', url);
+          return url;
+        });
     }
-/*        if (place.photos && place.photos.length > 0) {
-        return googlePlacesService.getPhotoUrl(place.photos[0].photo_reference, 400);
-       } */
-       return null;
+       return []; */
     };
 
     if (!visible || !place) return null;
@@ -212,13 +231,14 @@ const PlaceCard = ({place, onClose, visible}) => {
 
                         {activeTab === 'photos' && (
                             <View style={styles.photosTab}>
-                                {displayPlace.photos && displayPlace.photos.length > 0 ? (
+                                {photoUrls.length > 0 ? (
                                     <ScrollView horizontal showsHorizontalScrollIndicator={false}>
-                                        {displayPlace.photos.slice(0,5).map((photo, index) => (
+                                        {photoUrls.map((url, index) => (
                                             <Image
                                                 key={index}
-                                                source={{ uri: getPhotoUrl(photo.photo_reference) }}
+                                                source={{ uri: url }}
                                                 style={styles.photo}
+                                                cache={false}
                                             />
                                         ))}
                                     </ScrollView>
