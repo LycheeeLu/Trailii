@@ -1,5 +1,7 @@
 import React, { createContext, useState, useEffect, useReducer, useContext, useRef } from 'react';
 import FirestoreService  from '../services/fireStoreService';
+import { buildPlaceData } from '../utils/placeUtils';
+
 
 const TripContext = createContext();
 
@@ -193,7 +195,7 @@ export const TripProvider = ({ children }) => {
                 ...place,
                 tempId: `${place.id || 'place'}_${Date.now()}`,
                 visitDuration: place.visitDuration || 60,
-                addedAt: new Date().toISOString() // 临时使用 ISO 字符串
+                addedAt: new Date().toISOString()
             };
 
             dispatch({
@@ -204,7 +206,8 @@ export const TripProvider = ({ children }) => {
 
             isLocalUpdateRef.current = true;
 
-            const savedPlace = await FirestoreService.addPlaceToDay(state.currentTrip.id, day, place);
+            const cleanPlace = buildPlaceData(place);
+            const savedPlace = await FirestoreService.addPlaceToDay(state.currentTrip.id, day, cleanPlace);
             console.log('✅ Place saved to Firestore:', savedPlace);
 
             setTimeout(() => {

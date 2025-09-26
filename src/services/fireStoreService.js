@@ -12,6 +12,7 @@ import { getFirestore,
         arrayRemove
  } from "firebase/firestore";
 import { db } from './firebaseService';
+import { buildPlaceData } from "../utils/placeUtils";
 
 /*
 example trip document:
@@ -158,12 +159,13 @@ class FireStoreService {
     */
     async addPlaceToDay(tripId, day, place){
         try {
-            console.log('Place object:', JSON.stringify(place, null, 2));
+            const cleanPlace = buildPlaceData(place);
+            console.log('Place object:', JSON.stringify(cleanPlace, null, 2));
             const tripRef = doc(db, this.tripsCollection, tripId);
             const placeWithId = {
-                ...place,
+                ...cleanPlace,
                 tempId: `${Date.now()}`, // Unique ID for this instance
-                visitDuration: place.visitDuration || 60, // Default 1 hour
+                visitDuration: cleanPlace.visitDuration || 60, // Default 1 hour
                 addedAt: Timestamp.now()
             };
 
@@ -194,7 +196,7 @@ class FireStoreService {
             });
 
         } catch (error){
-              console.error('Error adding place to day:', error);
+              console.error('Error removing place to day:', error);
             throw error;
 
         }

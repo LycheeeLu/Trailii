@@ -39,7 +39,7 @@ const PlaceCard = ({place, onClose, visible}) => {
 
             // load 6 pictuers
             if (details?.photos && details.photos.length > 0) {
-            const urls = details.photos.slice(0, 6).map(photo =>
+            const urls = details.photos.slice(0, 10).map(photo =>
                 googlePlacesService.getPhotoUrl(photo.photo_reference, 400)
             );
               getPhotoUrls(urls);
