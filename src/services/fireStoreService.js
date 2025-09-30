@@ -57,7 +57,7 @@ class FireStoreService {
         try{
             console.log('🔵 Creating trip for userId:', userId);
             const tripId = `trip_${Date.now()}_${userId}`;
-            console.log("🔵Created trip:", tripId);
+            console.log("🔵 Created trip:", tripId);
             const trip = {
                 id: tripId,
                 userId,

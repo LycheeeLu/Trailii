@@ -78,22 +78,6 @@ const PlaceCard = ({place, onClose, visible}) => {
     // return  pictures
     const getPhotoUrls = (urls) => {
       setPhotoUrls(urls);
-      console.log('photo urls:', urls);
-/*       if (place.place_id) {
-      const urls = googlePlacesService.getMultiplePhotoUrls(place.place_id, 400);
-      console.log('generated photo urls: ', urls);
-      return urls;
-      }
-      return []; */
-/*       if (place.photos && place.photos.length > 0) {
-        return place.photos.slice(0,6).map(photo=>{
-          const photoRef = photo.photo_reference || photo.photoreference;
-          const url = googlePlacesService.getMultiplePhotoUrls(photoRef, 400);
-          console.log('generated photo url: ', url);
-          return url;
-        });
-    }
-       return []; */
     };
 
     if (!visible || !place) return null;

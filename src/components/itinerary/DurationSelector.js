@@ -9,6 +9,7 @@ import {
   Modal,
   ScrollView
 } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 const Duration_OPTIONS = [
  { value: 30, label: '30 min' },
@@ -17,7 +18,7 @@ const Duration_OPTIONS = [
   { value: 120, label: '2 hours' },
   { value: 150, label: '2.5 hours'},
   { value: 180, label: '3 hours' },
-  { value: 240, label: '4 + hours' },
+  { value: 240, label: '4+ hours' },
 ]
 
 const DurationSelector = ({duration, onDurationChange, style}) => {
@@ -56,7 +57,7 @@ const DurationSelector = ({duration, onDurationChange, style}) => {
             <Ionicons
                 name="chevron-down"
                 size={16}
-                color={COLORS.white}
+                color={COLORS.primary}
             />
         </TouchableOpacity>
 
@@ -66,24 +67,26 @@ const DurationSelector = ({duration, onDurationChange, style}) => {
             visible={modalVisible}
             onRequestClose={()=> setModalVisible(false)}
         >
-            <View style={styles.modalOverlay}>
+            <SafeAreaView style={styles.modalOverlay}>
                 <View style={styles.modalContent}>
+                  <View style={styles.modalHeader}>
                     <Text style={styles.modalTitle}>
-                        Visit Duration
+                        How long to visit
                     </Text>
                     <TouchableOpacity
                         onPress={()=> setModalVisible(false)}
-                        styles={styles.closeButton}>
+                        style={styles.closeButton}>
                         <Ionicons name="close"
                             size={24}
                             color={COLORS.gray}
                         />
                     </TouchableOpacity>
 
-                </View>
+                  </View>
 
-                <ScrollView style={styles.optionsList}>
-                    {Duration_OPTIONS.map((option)=>{
+                <ScrollView style={styles.optionsList}
+                          showsVerticalScrollIndicator={true}>
+                    {Duration_OPTIONS.map((option)=>(
                         <TouchableOpacity
                             key={option.value}
                             style={[
@@ -105,9 +108,10 @@ const DurationSelector = ({duration, onDurationChange, style}) => {
                                 />
                             )}
                         </TouchableOpacity>
-                    })}
-                </ScrollView>
-            </View>
+                    ))}
+                  </ScrollView>
+                </View>
+            </SafeAreaView>
         </Modal>
         </>
     );
@@ -140,6 +144,7 @@ const styles = StyleSheet.create({
     borderTopLeftRadius: 20,
     borderTopRightRadius: 20,
     maxHeight: '60%',
+    minHeight: 400,
   },
   modalHeader: {
     flexDirection: 'row',
@@ -152,7 +157,7 @@ const styles = StyleSheet.create({
   modalTitle: {
     fontSize: 18,
     fontWeight: '600',
-    color: COLORS.black,
+    color: COLORS.primaryLight,
   },
   closeButton: {
     padding: 5,

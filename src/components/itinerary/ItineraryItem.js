@@ -38,12 +38,7 @@ const ItineraryItem = ({
     const getImageUrl = () => {
       const photoRef = place.photos[0].photo_reference || place.photos[0].photoreference;
       const url = GooglePlacesService.getPhotoUrl(photoRef, 400);
-        console.log('Generated photo URL:', url);
         return url;
-/*         if(place.photos && place.photos.length > 0) {
-            return GooglePlacesService.getPhotoUrl(place.photos[0].photoreference, 100);
-        } */
-        return null;
     };
 
 
