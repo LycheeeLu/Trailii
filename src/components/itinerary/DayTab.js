@@ -8,14 +8,14 @@ import { FlatList, TouchableOpacity, StyleSheet, View, Text } from "react-native
 
 const DayTab = ({day, places, onReorder, estimatedTimes}) => {
     const [showMapRoute, setShowMapRoute] = useState(false);
-    const {removeFromDay, updatePlaceDuraiton} = useTrip();
+    const {removeFromDay, updatePlaceDuration} = useTrip();
 
     const handleRemovePlace = (place) => {
         removeFromDay(day, place)
     };
 
     const handleDurationChange = (placeIndex, duration) =>{
-        updatePlaceDuraiton(day, placeIndex, duration);
+        updatePlaceDuration(day, placeIndex, duration);
     };
 
     const handleDragStart = (fromIndex) => {
