@@ -91,6 +91,7 @@ const tripReducer = (state, action) => {
                     ...state.itinerary,
                     [action.day]: state.itinerary[action.day].filter(
                         (place) => place.id !== action.placeID
+                        && place.tempId !== action.placeID
 
                     ),
                 },

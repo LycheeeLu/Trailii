@@ -11,7 +11,7 @@ const DayTab = ({day, places, onReorder, estimatedTimes}) => {
     const {removeFromDay, updatePlaceDuration} = useTrip();
 
     const handleRemovePlace = (place) => {
-        removeFromDay(day, place)
+        removeFromDay(place.tempId?? place.id, day)
     };
 
     const handleDurationChange = (placeIndex, duration) =>{

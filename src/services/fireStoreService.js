@@ -196,7 +196,7 @@ class FireStoreService {
             });
 
         } catch (error){
-              console.error('Error removing place to day:', error);
+              console.error('Error removing place from day:', error);
             throw error;
 
         }

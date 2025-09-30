@@ -12,7 +12,7 @@ import {
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 const Duration_OPTIONS = [
- { value: 30, label: '30 min' },
+ { value: 30, label: '0.5 hour' },
   { value: 60, label: '1 hour' },
   { value: 90, label: '1.5 hours' },
   { value: 120, label: '2 hours' },
