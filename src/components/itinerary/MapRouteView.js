@@ -80,13 +80,12 @@ const MapRouteView = ({visible, onClose, places, day}) =>{
         setRoute(coordinates);
     };
 
-    const gradient = chroma.scale(['orange', 'orchid']).mode('lab');
+    const gradient = chroma.scale(['orange', 'hotpink']).mode('lab');
 
     // loop in colors
     const getMarkerColor = (index, total) => {
         const ratio = total > 1 ? index / (total - 1) : 0;
         return gradient(ratio).hex();
-
     };
 
     if (!visible || ! region) return null;
@@ -121,15 +120,18 @@ const MapRouteView = ({visible, onClose, places, day}) =>{
                       key={`${place.id}_${index}`}
                       coordinate={place.location}
                       title={`${index + 1}. ${place.name}`}
-                      description={`Visit duration: ${place.visitDuration || 60} min`}
+                      description={`Visit for ${place.visitDuration || 60} min`}
                       pinColor={getMarkerColor(index, places.length)}
                     >
-                      <View style={[styles.customMarker, { backgroundColor: getMarkerColor(index) }]}>
+                      <View style={[styles.customMarker, { backgroundColor: getMarkerColor(index, places.length) }]}>
                         <Text style={styles.markerText}>{index + 1}</Text>
                       </View>
+
                     </Marker>
                   ))}
-                  <Polyline coordinates={route} strokeWidth={3} strokeColor={COLORS.primary} lineDashPattern={[4, 4]} />
+
+                   <Polyline coordinates={route} strokeWidth={3} strokeColor={COLORS.primaryLight} />
+
                 </MapView>
 
             </View>
