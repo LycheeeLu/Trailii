@@ -1,0 +1,6 @@
+﻿name,url,duration,success
+failed request,https://www.tripadvisor.com/Attraction_Review-g189852-d243851-Reviews-Vasa_Museum-Stockholm.html,failed request: 403 Client Error: Forbidden for url: https://www.tripadvisor.com/Attraction_Review-g189852-d243851-Reviews-Vasa_Museum-Stockholm.html,False
+failed request,https://www.tripadvisor.com/Attraction_Review-g189852-d195439-Reviews-Skansen-Stockholm.html,failed request: 403 Client Error: Forbidden for url: https://www.tripadvisor.com/Attraction_Review-g189852-d195439-Reviews-Skansen-Stockholm.html,False
+failed request,https://www.tripadvisor.com/Attraction_Review-g189852-d4454428-Reviews-ABBA_The_Museum-Stockholm.html,failed request: 403 Client Error: Forbidden for url: https://www.tripadvisor.com/Attraction_Review-g189852-d4454428-Reviews-ABBA_The_Museum-Stockholm.html,False
+failed request,https://www.tripadvisor.com/Attraction_Review-g189852-d243844-Reviews-Royal_Palace-Stockholm.html,failed request: 403 Client Error: Forbidden for url: https://www.tripadvisor.com/Attraction_Review-g189852-d243844-Reviews-Royal_Palace-Stockholm.html,False
+failed request,https://www.tripadvisor.com/Attraction_Review-g189852-d243843-Reviews-Gamla_Stan-Stockholm.html,failed request: 403 Client Error: Forbidden for url: https://www.tripadvisor.com/Attraction_Review-g189852-d243843-Reviews-Gamla_Stan-Stockholm.html,False
