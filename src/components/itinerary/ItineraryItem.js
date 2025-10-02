@@ -19,7 +19,8 @@ const ItineraryItem = ({
     onDurationchange,
     onRemove,
     onDragStart,
-    estimatedTime
+    estimatedTime,
+    isLast,
 }) => {
 
     const handleRemove = () =>{
@@ -113,7 +114,7 @@ const ItineraryItem = ({
                 </TouchableOpacity>
             </View>
              {/* Connection line to next item */}
-             <View style={styles.connectionLine} />
+             {! isLast && <View style={styles.connectionLine} />}
 
         </View>
     );
@@ -188,7 +189,7 @@ const styles = StyleSheet.create({
     height: 20,
     backgroundColor: COLORS.primary + '30',
     marginLeft: 35,
-    marginTop: 5,
+    marginTop: 10,
   },
 
 }

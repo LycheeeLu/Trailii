@@ -106,6 +106,7 @@ const DayTab = ({day, places, onReorder, estimatedTimes}) => {
                             onRemove={handleRemovePlace}
                             onDragStart={handleDragStart}
                             estimatedTime={estimatedTimes?.[index]}
+                            isLast={index === places.length - 1}
                         />
 
 

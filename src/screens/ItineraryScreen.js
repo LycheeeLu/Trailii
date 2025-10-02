@@ -219,10 +219,10 @@ const ItineraryScreen = () =>{
                 </View>
 
                      {/* Quick Add Button */}
-{/*                      <TouchableOpacity style={styles.quickAddButton}>
+                      <TouchableOpacity style={styles.quickAddButton}>
                       <Ionicons name="add-circle" size={24} color={COLORS.white} />
-                        <Text style={styles.quickAddText}> Quick Add</Text>
-                     </TouchableOpacity> */}
+                        <Text style={styles.quickAddText}>SPOT</Text>
+                     </TouchableOpacity>
 
       </SafeAreaProvider>
 
@@ -341,13 +341,15 @@ const styles = StyleSheet.create({
     left: 0,
     right: 0,
     height: 3,
-    backgroundColor: COLORS.white,
+    backgroundColor: COLORS.background,
     borderRadius: 1.5,
   },
   contentContainer: {
     flex: 1,
+    borderColor: '#ccc',
+    borderLeftWidth: 1,
   },
-/*   quickAddButton: {
+   quickAddButton: {
     position: 'absolute',
     bottom: 20,
     right: 20,
@@ -362,12 +364,12 @@ const styles = StyleSheet.create({
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.25,
     shadowRadius: 3.84,
-  }, */
-/*   quickAddText: {
+  },
+   quickAddText: {
     color: COLORS.white,
     fontWeight: '600',
     marginLeft: 8,
-  }, */
+  },
 });
 
 export default ItineraryScreen;
