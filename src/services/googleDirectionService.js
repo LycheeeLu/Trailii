@@ -7,7 +7,6 @@ class GoogleDirectionService{
     }
 
     // get distance matrix betwen mulitple potns
-    // ad
     async getDistanceMatrix(origins, destinations, mode = 'walking'){
         try{
             const originsStr = origins.map(o=> `${o.latitude},${o.longitude}`).join('|');
@@ -186,7 +185,7 @@ class GoogleDirectionService{
         };
     }
 
-    // get travel time between two points ( in minutes)
+    // get travel time between two points
     // JSON → matrix → duration → minutes
     async getTravelTime(origin, destination, mode= 'walking'){
         try{
