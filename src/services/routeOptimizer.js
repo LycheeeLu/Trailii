@@ -1,6 +1,9 @@
 import GoogleDirectionService from './googleDirectionsService';
-import { formatTime, addMinutes, isWithinBusinessHours, parseTimeString } from '../utils/timeUtils';
+import { formatTime, addMinutes } from '../utils/timeUtils';
+import { formatDuration } from '../utils/timeUtils';
 import { calculateDistance, sortByDistance } from '../utils/geoUtils';
+import GooglePlacesService from './googlePlaceService';
+
 
 class RouteOptimizer {
     constructor() {
@@ -215,17 +218,306 @@ class RouteOptimizer {
 
     // get opening hours
     getOpeningHours(place){
-        if (!place.openingHours || !place.openingHours.weekday_text) {
-        return null;
-        }
-        // Check if place has isOpen status
-        if (place.openingHours.open_now !== undefined) {
-        return place.openingHours.open_now ? defaultHours : null;
-        }
-
-        return defaultHours;
-
+        const hours = GooglePlacesService.parseOpeningHours(place.openingHours);
+        return hours ;
     }
 
+
+    // create detailed schedule with all information
+    async createDetailedSchedule(places, distanceMatrix, startTime, scheduleType, considerOpeningHours) {
+    const schedule = [];
+    let currentTime = startTime;
+    const warnings = [];
+    const bufferTime = this.bufferTimes[scheduleType];
+
+    console.log(`📅 Creating ${scheduleType} schedule starting at ${formatTime(startTime)}`);
+
+    for (let i = 0; i < places.length; i++) {
+      const place = places[i];
+      const visitDuration = place.visitDuration || 60;
+
+      // Add travel time from previous place
+      let travelTime = 0;
+      let travelInfo = null;
+
+      if (i > 0) {
+        const prevPlace = places[i - 1];
+        const prevIndex = places.indexOf(prevPlace);
+        const currentIndex = places.indexOf(place);
+
+        if (distanceMatrix[prevIndex] && distanceMatrix[prevIndex][currentIndex]) {
+          const travel = distanceMatrix[prevIndex][currentIndex];
+          travelTime = Math.ceil(travel.duration / 60); // Convert to minutes
+          travelInfo = {
+            duration: travelTime,
+            distance: travel.distance,
+            durationText: travel.durationText || `${travelTime} min`,
+            distanceText: travel.distanceText || `${(travel.distance / 1000).toFixed(1)} km`
+          };
+        } else {
+          travelTime = this.defaultTravelTime;
+          travelInfo = {
+            duration: travelTime,
+            durationText: `${travelTime} min`,
+            distanceText: 'Unknown'
+          };
+        }
+
+        currentTime = addMinutes(currentTime, travelTime + bufferTime);
+      }
+
+      const arrivalTime = currentTime;
+      const departureTime = addMinutes(currentTime, visitDuration);
+
+      // Check time constraints
+      if (considerOpeningHours) {
+        const openingHours = this.getOpeningHours(place);
+        if (openingHours) {
+          if (arrivalTime < openingHours.open) {
+            warnings.push(`${place.name} may not be open at ${formatTime(arrivalTime)}`);
+          }
+          if (departureTime > openingHours.close) {
+            warnings.push(`${place.name} closes before ${formatTime(departureTime)}`);
+          }
+        }
+      }
+
+      // Check if schedule is too late
+      if (departureTime > this.defaultEndTime) {
+        warnings.push(`Late schedule: ${place.name} ends at ${formatTime(departureTime)}`);
+      }
+
+      schedule.push({
+        ...place,
+        scheduledArrival: arrivalTime,
+        scheduledDeparture: departureTime,
+        arrivalTime: formatTime(arrivalTime),
+        departureTime: formatTime(departureTime),
+        visitDuration,
+        travelFromPrevious: travelInfo,
+        order: i + 1
+      });
+
+      currentTime = departureTime;
+    }
+
+    const totalTime = currentTime - startTime;
+    const totalTravelTime = schedule.reduce((sum, place) =>
+      sum + (place.travelFromPrevious?.duration || 0), 0
+    );
+    const totalVisitTime = schedule.reduce((sum, place) =>
+      sum + place.visitDuration, 0
+    );
+
+    return {
+      optimizedPlaces: schedule,
+      totalTime,
+      totalTimeText: this.formatDuration(totalTime),
+      totalTravelTime,
+      totalTravelTimeText: this.formatDuration(totalTravelTime),
+      totalVisitTime,
+      totalVisitTimeText: this.formatDuration(totalVisitTime),
+      warnings,
+      scheduleType,
+      startTime: formatTime(startTime),
+      endTime: formatTime(currentTime),
+      bufferTime
+    };
+  }
+
+  // Generate optimization insights
+  generateOptimizationInsights(originalPlaces, optimizedPlaces, schedule, scheduleType) {
+    const insights = [];
+
+    // Calculate efficiency
+    const totalDistance = optimizedPlaces.reduce((sum, place, index) => {
+      if (index === 0) return sum;
+      const prev = optimizedPlaces[index - 1];
+      return sum + calculateDistance(prev.location, place.location);
+    }, 0);
+
+    const avgDistance = totalDistance / Math.max(1, optimizedPlaces.length - 1);
+
+    insights.push({
+      type: 'efficiency',
+      title: 'Route Efficiency',
+      message: `Average distance between stops: ${(avgDistance / 1000).toFixed(2)} km`,
+      icon: 'trending-up'
+    });
+
+    // Check for time optimization
+    if (schedule.totalTravelTime < schedule.totalVisitTime) {
+      insights.push({
+        type: 'success',
+        title: 'Well Optimized',
+        message: `Travel time (${schedule.totalTravelTimeText}) is less than visit time`,
+        icon: 'checkmark-circle'
+      });
+    }
+
+    // Schedule type recommendation
+    const scheduleRecommendations = {
+      tight: 'Maximizes attractions but may feel rushed',
+      balanced: 'Good balance of sightseeing and relaxation',
+      relaxed: 'Plenty of time to enjoy each place'
+    };
+
+    insights.push({
+      type: 'info',
+      title: `${scheduleType.charAt(0).toUpperCase() + scheduleType.slice(1)} Schedule`,
+      message: scheduleRecommendations[scheduleType],
+      icon: 'information-circle'
+    });
+
+    // Warning for long days
+    if (schedule.totalTime > 8 * 60) {
+      insights.push({
+        type: 'warning',
+        title: 'Long Day Planned',
+        message: `This is a ${this.formatDuration(schedule.totalTime)} day. Consider splitting across multiple days.`,
+        icon: 'alert-circle'
+      });
+    }
+
+    return insights;
+  }
+
+  // Get distance matrix
+  async getDistanceMatrix(places) {
+    try {
+      const locations = places.map(place => place.location);
+      const matrix = await GoogleDirectionsService.getDistanceMatrix(
+        locations,
+        locations,
+        this.travelMode
+      );
+      console.log('✅ Distance matrix retrieved from Google API');
+      return matrix;
+    } catch (error) {
+      console.warn('⚠️ Google API failed, using fallback distance calculation');
+      return this.createFallbackDistanceMatrix(places);
+    }
+  }
+
+    // Fallback distance matrix
+  createFallbackDistanceMatrix(places) {
+    const matrix = [];
+
+    places.forEach((place1, i) => {
+      matrix[i] = [];
+      places.forEach((place2, j) => {
+        if (i === j) {
+          matrix[i][j] = { duration: 0, distance: 0 };
+        } else {
+          const distance = calculateDistance(place1.location, place2.location);
+          const duration = Math.max(300, distance / 1.4 * 60); // Walking speed ~1.4 m/s
+
+          matrix[i][j] = {
+            duration: duration,
+            distance: distance,
+            durationText: `${Math.ceil(duration / 60)} mins`,
+            distanceText: `${(distance / 1000).toFixed(1)} km`
+          };
+        }
+      });
+    });
+
+    return matrix;
+  }
+    // Single place schedule
+  createSinglePlaceSchedule(place, startTime) {
+    const visitDuration = place.visitDuration || 60;
+    const arrivalTime = startTime;
+    const departureTime = addMinutes(startTime, visitDuration);
+
+    return {
+      optimizedPlaces: [{
+        ...place,
+        scheduledArrival: arrivalTime,
+        scheduledDeparture: departureTime,
+        arrivalTime: formatTime(arrivalTime),
+        departureTime: formatTime(departureTime),
+        visitDuration,
+        order: 1
+      }],
+      totalTime: visitDuration,
+      totalTimeText: this.formatDuration(visitDuration),
+      totalTravelTime: 0,
+      totalTravelTimeText: '0 min',
+      totalVisitTime: visitDuration,
+      totalVisitTimeText: this.formatDuration(visitDuration),
+      warnings: [],
+      insights: [{
+        type: 'info',
+        title: 'Single Destination',
+        message: 'Add more places for route optimization',
+        icon: 'information-circle'
+      }],
+      scheduleType: 'single',
+      startTime: formatTime(startTime),
+      endTime: formatTime(departureTime)
+    };
+  }
+  // Fallback optimization
+  fallbackOptimization(places, startTime, scheduleType) {
+    console.log('⚠️ Using fallback optimization');
+
+    if (places.length > 1) {
+      const center = {
+        latitude: places.reduce((sum, p) => sum + p.location.latitude, 0) / places.length,
+        longitude: places.reduce((sum, p) => sum + p.location.longitude, 0) / places.length
+      };
+
+      const sortedPlaces = sortByDistance(places, center);
+      return this.createSimpleSchedule(sortedPlaces, startTime, scheduleType);
+    }
+
+    return this.createSinglePlaceSchedule(places[0], startTime);
+  }
+
+    // Simple schedule without API
+  createSimpleSchedule(places, startTime, scheduleType) {
+    const schedule = [];
+    let currentTime = startTime;
+    const bufferTime = this.bufferTimes[scheduleType];
+
+    places.forEach((place, index) => {
+      if (index > 0) {
+        currentTime = addMinutes(currentTime, this.defaultTravelTime + bufferTime);
+      }
+
+      const visitDuration = place.visitDuration || 60;
+      const arrivalTime = currentTime;
+      const departureTime = addMinutes(currentTime, visitDuration);
+
+      schedule.push({
+        ...place,
+        scheduledArrival: arrivalTime,
+        scheduledDeparture: departureTime,
+        arrivalTime: formatTime(arrivalTime),
+        departureTime: formatTime(departureTime),
+        visitDuration,
+        order: index + 1
+      });
+
+      currentTime = departureTime;
+    });
+
+    return {
+      optimizedPlaces: schedule,
+      totalTime: currentTime - startTime,
+      totalTimeText: this.formatDuration(currentTime - startTime),
+      warnings: [],
+      insights: [{
+        type: 'info',
+        title: 'Basic Optimization',
+        message: 'Using geographical sorting',
+        icon: 'information-circle'
+      }],
+      scheduleType,
+      startTime: formatTime(startTime),
+      endTime: formatTime(currentTime)
+    };
+  }
 
 }

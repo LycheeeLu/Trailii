@@ -1,5 +1,6 @@
 import {MAPS_API_KEY} from '../constants/config';
 
+
 class GooglePlacesService {
     constructor() {
         this.apikey = MAPS_API_KEY;
@@ -141,8 +142,8 @@ class GooglePlacesService {
     }
 
 
-    // parse opening hours
-    arseOpeningHours(openingHours) {
+    // parse opening_hours object into { open, close }
+    parseOpeningHours(openingHours) {
     if (!openingHours?.periods) {
         // fallback
         return { open: 9 * 60, close: 20 * 60 };
