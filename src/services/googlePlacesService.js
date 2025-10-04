@@ -140,6 +140,38 @@ class GooglePlacesService {
         `key=${this.apikey}`;
     }
 
+
+    // parse opening hours
+    arseOpeningHours(openingHours) {
+    if (!openingHours?.periods) {
+        // fallback
+        return { open: 9 * 60, close: 20 * 60 };
+    }
+
+    // 0=Sunday, 1=Monday...
+    const today = new Date().getDay();
+
+    const todayPeriod = openingHours.periods.find(
+        p => p.open.day === today
+    );
+
+    if (!todayPeriod) {
+        // fallback
+        return { open: 9 * 60, close: 21 * 60 };
+    }
+
+    const parseTime = (timeStr) => {
+        const hours = parseInt(timeStr.substring(0, 2), 10);
+        const minutes = parseInt(timeStr.substring(2), 10);
+        return hours * 60 + minutes; // convert to minutes since midnight
+    };
+
+    return {
+        open: parseTime(todayPeriod.open.time),
+        close: parseTime(todayPeriod.close.time)
+    };
+    }
+
 }
 
 export default new GooglePlacesService();
