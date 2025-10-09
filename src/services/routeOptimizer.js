@@ -64,12 +64,12 @@ class RouteOptimizer {
             );
 
             // step 5: generate insights
-            const insights = this.generateOptimizationInsights(
+/*             const insights = this.generateOptimizationInsights(
                 places,
                 optimizedRoute,
                 schedule,
                 scheduleType
-            );
+            ); */
 
             return {
                 ...schedule,

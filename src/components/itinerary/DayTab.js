@@ -4,7 +4,7 @@ import { useTrip } from "../../contexts/TripContext";
 import ItineraryItem from "./ItineraryItem";
 import MapRouteView from "./MapRouteView";
 import { Ionicons } from "@expo/vector-icons";
-import { FlatList, TouchableOpacity, StyleSheet, View, Text } from "react-native";
+import { FlatList, TouchableOpacity, StyleSheet, View, Text, ActivityIndicator } from "react-native";
 import RouteOptimizer from "../../services/routeOptimizer";
 import OptimizationResults from "./OptimizationResults";
 import ScheduleOptions from '../itinerary/ScheduleOptions';
