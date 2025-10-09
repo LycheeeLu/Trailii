@@ -16,7 +16,7 @@ const DayTab = ({day, places, onReorder, estimatedTimes}) => {
     const [optimizationResults, setOptimizationResults] = useState(null);
     const [optimizing, setOptimizing] = useState(false);
 
-    const {removeFromDay, updatePlaceDuration} = useTrip();
+    const {removeFromDay, updatePlaceDuration, updateDayItinerary} = useTrip();
 
     const handleRemovePlace = (place) => {
       Alert.alert(

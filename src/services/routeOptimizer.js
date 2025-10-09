@@ -73,7 +73,7 @@ class RouteOptimizer {
 
             return {
                 ...schedule,
-                insights,
+          /*       insights, */
                 algorithm: 'nearest-neighbor + 2-opt',
                 scheduleType
             };
