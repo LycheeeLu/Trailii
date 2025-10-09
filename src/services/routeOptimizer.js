@@ -1,7 +1,7 @@
 import GoogleDirectionsService from './googleDirectionsService';
 import { formatTime, addMinutes } from '../utils/timeUtils';
 import { calculateDistance, sortByDistance } from '../utils/geoUtils';
-import GooglePlacesService from './googlePlaceService';
+import GooglePlacesService from './googlePlacesService';
 
 
 class RouteOptimizer {

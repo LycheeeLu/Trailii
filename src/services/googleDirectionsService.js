@@ -1,6 +1,6 @@
 import { MAPS_API_KEY} from "../constants/config";
 
-class GoogleDirectionService{
+class GoogleDirectionsService{
     constructor() {
         this.apiKey = MAPS_API_KEY;
         this.baseUrl = 'https://maps.googleapis.com/maps/api';
@@ -199,4 +199,4 @@ class GoogleDirectionService{
     }
 }
 
-export default new GoogleDirectionService();
+export default new GoogleDirectionsService();
