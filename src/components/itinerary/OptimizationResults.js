@@ -14,7 +14,7 @@ import { COLORS } from '../../constants/config';
 const OptimizationResults = ({ visible, onClose, results, onApply, onCancel }) => {
   if (!results) return null;
 
-  const getInsightIcon = (type) => {
+/*   const getInsightIcon = (type) => {
     const icons = {
       success: 'checkmark-circle',
       warning: 'alert-circle',
@@ -32,7 +32,7 @@ const OptimizationResults = ({ visible, onClose, results, onApply, onCancel }) =
       efficiency: COLORS.secondary
     };
     return colors[type] || COLORS.gray;
-  };
+  }; */
 
   const handleApply = () => {
     Alert.alert(
@@ -143,7 +143,7 @@ const OptimizationResults = ({ visible, onClose, results, onApply, onCancel }) =
             </View>
 
             {/* Insights */}
-            {results.insights && results.insights.length > 0 && (
+{/*             {results.insights && results.insights.length > 0 && (
               <>
                 <Text style={styles.sectionTitle}>Insights</Text>
                 {results.insights.map((insight, index) => (
@@ -163,10 +163,10 @@ const OptimizationResults = ({ visible, onClose, results, onApply, onCancel }) =
                   </View>
                 ))}
               </>
-            )}
+            )} */}
 
             {/* Warnings */}
-            {results.warnings && results.warnings.length > 0 && (
+{/*             {results.warnings && results.warnings.length > 0 && (
               <>
                 <Text style={styles.sectionTitle}>Warnings</Text>
                 {results.warnings.map((warning, index) => (
@@ -176,7 +176,7 @@ const OptimizationResults = ({ visible, onClose, results, onApply, onCancel }) =
                   </View>
                 ))}
               </>
-            )}
+            )} */}
           </ScrollView>
 
           {/* Action Buttons */}
@@ -329,7 +329,7 @@ const styles = StyleSheet.create({
     color: COLORS.gray,
     marginLeft: 6,
   },
-  insightCard: {
+/*   insightCard: {
     flexDirection: 'row',
     backgroundColor: COLORS.lightGray,
     padding: 12,
@@ -364,7 +364,7 @@ const styles = StyleSheet.create({
     fontSize: 13,
     color: COLORS.black,
     marginLeft: 10,
-  },
+  }, */
   actions: {
     flexDirection: 'row',
     padding: 20,

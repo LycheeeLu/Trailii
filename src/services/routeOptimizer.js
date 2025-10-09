@@ -25,12 +25,12 @@ class RouteOptimizer {
             scheduleType = 'balanced',
             startLocation = null,
             endLocation = null,
-            considerOpeningsHours = true,
+            considerOpeningHours = true,
             maxIterations = 100
         } = options;
 
            if (places.length === 0) {
-            return {optmizedPlaces: [],
+            return {optimizedPlaces: [],
                     totalTime: 0,
                     warining: [],
                     insights: []
@@ -47,7 +47,7 @@ class RouteOptimizer {
             const distanceMatrix = await this.getDistanceMatrix(places);
             // step 2: apply TSP optimization
             const initialRoute = this.nearestNeighborTSP(places, distanceMatrix);
-            const optmizedRoute = this.twoOptImprovement(initialRoute, distanceMatrix, maxIterations);
+            const optimizedRoute = this.twoOptImprovement(initialRoute, distanceMatrix, maxIterations);
 
             // step 3: apply time window constraints
             let finalRoute = optimizedRoute;
@@ -82,7 +82,7 @@ class RouteOptimizer {
 
          } catch (error) {
             console.error('Route optimization error: ', error);
-            return this.fallbackOptmization(places, startTime, scheduleType);
+            return this.fallbackOptimization(places, startTime, scheduleType);
          }
     }
 
@@ -326,7 +326,7 @@ class RouteOptimizer {
   }
 
   // Generate optimization insights
-  generateOptimizationInsights(originalPlaces, optimizedPlaces, schedule, scheduleType) {
+/*   generateOptimizationInsights(originalPlaces, optimizedPlaces, schedule, scheduleType) {
     const insights = [];
 
     // Calculate efficiency
@@ -380,13 +380,13 @@ class RouteOptimizer {
     }
 
     return insights;
-  }
+  } */
 
   // Get distance matrix
   async getDistanceMatrix(places) {
     try {
       const locations = places.map(place => place.location);
-      const matrix = await GoogleDirectionsService.getDistanceMatrix(
+      const matrix = await GoogleDirectionService.getDistanceMatrix(
         locations,
         locations,
         this.travelMode
