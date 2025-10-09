@@ -204,12 +204,15 @@ class FireStoreService {
 
 
        // Update entire day itinerary (for reordering)
+       // clean data first to remove undefined
         async updateDayItinerary(tripId, day, places){
         try {
+            const cleanPlaces = places.map(place => buildPlaceData(place));
+            console.log('Place object:', JSON.stringify(cleanPlaces, null, 2));
             const tripRef = doc(db, this.tripsCollection, tripId);
             await updateDoc(tripRef,
                 {
-                    [`days.${day}`]: places,
+                    [`days.${day}`]: cleanPlaces,
                     updatedAt: Timestamp.now()
                 }
             );
