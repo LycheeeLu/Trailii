@@ -82,11 +82,7 @@ const ScheduleOptions = ({ visible, onClose, onOptimize, currentOptions = {} }) 
 
           <ScrollView style={styles.content}>
             {/* Schedule Type Selection */}
-            <Text style={styles.sectionTitle}>Schedule Type</Text>
-            <Text style={styles.sectionDescription}>
-                Pace your day
-            </Text>
-
+            <Text style={styles.sectionTitle}>Pace your day</Text>
             {SCHEDULE_TYPES.map((option) => (
               <TouchableOpacity
                 key={option.type}
@@ -115,9 +111,6 @@ const ScheduleOptions = ({ visible, onClose, onOptimize, currentOptions = {} }) 
 
             {/* Start Time Selection */}
             <Text style={styles.sectionTitle}>Start Time</Text>
-            <Text style={styles.sectionDescription}>
-              When to start the day
-            </Text>
             <View style={styles.timeOptionsContainer}>
               {START_TIME_OPTIONS.map((option) => (
                 <TouchableOpacity
@@ -157,6 +150,7 @@ const ScheduleOptions = ({ visible, onClose, onOptimize, currentOptions = {} }) 
                 </Text>
               </View>
             </View>
+
           </ScrollView>
 
           {/* Action Buttons */}
@@ -177,14 +171,15 @@ const ScheduleOptions = ({ visible, onClose, onOptimize, currentOptions = {} }) 
 const styles = StyleSheet.create({
   overlay: {
     flex: 1,
-    backgroundColor: 'rgba(0,0,0,0.5)',
+    backgroundColor: 'rgba(0,0,0,0.4)',
     justifyContent: 'flex-end',
   },
   container: {
     backgroundColor: COLORS.white,
-    borderTopLeftRadius: 20,
-    borderTopRightRadius: 20,
-    maxHeight: '80%',
+    borderTopLeftRadius: 15,
+    borderTopRightRadius: 15,
+    height: '80%',
+    padding: 20,
   },
   header: {
     flexDirection: 'row',

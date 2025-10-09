@@ -88,6 +88,11 @@ const DayTab = ({day, places, onReorder, estimatedTimes}) => {
       }
     };
 
+    const handleApplyOptimization = (results) => {
+      updateDayItinerary(day, results.optimizedPlaces);
+      Alert.alert('Success', 'Route has been optimized and applied!');
+    };
+
     const getTotalDuration = () => {
         return places.reduce((total, place) => total + (place.visitDuration || 60), 0);
     }
