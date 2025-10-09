@@ -1,17 +1,31 @@
 import React, {useState} from "react";
-import {COLORS, SIZES} from "../../constants/config";
+import {COLORS} from "../../constants/config";
 import { useTrip } from "../../contexts/TripContext";
 import ItineraryItem from "./ItineraryItem";
 import MapRouteView from "./MapRouteView";
 import { Ionicons } from "@expo/vector-icons";
 import { FlatList, TouchableOpacity, StyleSheet, View, Text } from "react-native";
+import RouteOptimizer from "../../services/routeOptimizer";
+import OptimizationResults from "./OptimizationResults";
 
 const DayTab = ({day, places, onReorder, estimatedTimes}) => {
     const [showMapRoute, setShowMapRoute] = useState(false);
+    const [showScheduleOptions, setShowScheduleOptions] = useState(false);
+    const [showOptimizationResults, setShowOptimizationResults] = useState(false);
+    const [optimizationResults, setOptimizationResults] = useState(null);
+    const [optimizing, setOptimizing] = useState(false);
+
     const {removeFromDay, updatePlaceDuration} = useTrip();
 
     const handleRemovePlace = (place) => {
-        removeFromDay(place.tempId?? place.id, day)
+      Alert.alert(
+        'Remove Place',
+      `Remove ${place.name} from your itinerary?`,
+      [
+        {text: 'Cancel', style: 'cancel'},
+        { text: 'Remove', style: 'destructive', onPress: () => removeFromDay(place.tempId?? place.id, day)}
+      ]
+      );
     };
 
     const handleDurationChange = (placeIndex, duration) =>{
@@ -39,6 +53,38 @@ const DayTab = ({day, places, onReorder, estimatedTimes}) => {
         onReorder(day, newPlaces);
 
 
+    };
+
+    const handleOptimizeSchedule = async (options) => {
+      if (places.length < 2) {
+        Alert.alert('Info', 'Add at least 2 places to optimize the route');
+        return;
+      }
+
+      setOptimizing(true);
+      console.log('🚀 Starting route optimization...');
+
+      try {
+        const optimizedResult = await RouteOptimizer.optimizeRoute(places, {
+          ...options,
+          considerOpeningHours: true,
+          maxIterations: 100
+        });
+
+        console.log('✅ Optimization complete:', optimizedResult);
+
+        setOptimizationResults(optimizedResult);
+        setShowOptimizationResults(true);
+
+      } catch (error) {
+        console.error('❌ Optimization error:', error);
+        Alert.alert(
+          'Optimization Failed',
+          'Could not optimize route. Please try again or check your internet connection.'
+        );
+      } finally {
+        setOptimizing(false);
+      }
     };
 
     const getTotalDuration = () => {
@@ -81,6 +127,31 @@ const DayTab = ({day, places, onReorder, estimatedTimes}) => {
 {/*                     <Text style={styles.summaryText}>
                         {places.length} places • {formatTotalTime(getTotalDuration())} total
                     </Text> */}
+                   <View style={styles.summaryLeft}>
+                      {optimizing && (
+                        <View style={styles.optimizingBadge}>
+                          <ActivityIndicator size="small" color={COLORS.primary} />
+                          <Text style={styles.optimizingText}>Optimizing...</Text>
+                        </View>
+                      )}
+                    </View>
+
+                  <View style={styles.summaryRight}>
+                    <TouchableOpacity
+                      style={[styles.actionButton, optimizing && styles.disabledButton]}
+                      onPress={() => setShowScheduleOptions(true)}
+                      disabled={optimizing}
+                    >
+                      <Ionicons
+                        name={optimizing ? "hourglass-outline" : "flash-outline"}
+                        size={14}
+                        color={optimizing ? COLORS.gray : COLORS.primary}
+                      />
+                      <Text style={[styles.actionButtonText, optimizing && styles.disabledText]}>
+                        Optimize
+                      </Text>
+                    </TouchableOpacity>
+
 
                     <TouchableOpacity
                     style={styles.mapButton}
@@ -89,6 +160,7 @@ const DayTab = ({day, places, onReorder, estimatedTimes}) => {
                     <Ionicons name="map-outline" size={16} color={COLORS.primary} />
                     <Text style={styles.mapButtonText}> View Daily Route</Text>
                     </TouchableOpacity>
+                  </View>
              </View>
 
              {/* Places list */}
