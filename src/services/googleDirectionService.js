@@ -198,4 +198,5 @@ class GoogleDirectionService{
         }
     }
 }
+
 export default new GoogleDirectionService();

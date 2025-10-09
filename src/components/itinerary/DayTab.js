@@ -7,7 +7,7 @@ import { Ionicons } from "@expo/vector-icons";
 import { FlatList, TouchableOpacity, StyleSheet, View, Text } from "react-native";
 import RouteOptimizer from "../../services/routeOptimizer";
 import OptimizationResults from "./OptimizationResults";
-import ScheduleOptions from './ScheduleOptons';
+import ScheduleOptions from '../itinerary/ScheduleOptions';
 
 const DayTab = ({day, places, onReorder, estimatedTimes}) => {
     const [showMapRoute, setShowMapRoute] = useState(false);

@@ -1,4 +1,4 @@
-import GoogleDirectionService from './googleDirectionsService';
+import GoogleDirectionsService from './googleDirectionsService';
 import { formatTime, addMinutes } from '../utils/timeUtils';
 import { calculateDistance, sortByDistance } from '../utils/geoUtils';
 import GooglePlacesService from './googlePlaceService';
@@ -385,7 +385,7 @@ class RouteOptimizer {
   async getDistanceMatrix(places) {
     try {
       const locations = places.map(place => place.location);
-      const matrix = await GoogleDirectionService.getDistanceMatrix(
+      const matrix = await GoogleDirectionsService.getDistanceMatrix(
         locations,
         locations,
         this.travelMode
