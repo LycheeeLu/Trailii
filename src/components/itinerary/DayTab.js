@@ -7,6 +7,7 @@ import { Ionicons } from "@expo/vector-icons";
 import { FlatList, TouchableOpacity, StyleSheet, View, Text } from "react-native";
 import RouteOptimizer from "../../services/routeOptimizer";
 import OptimizationResults from "./OptimizationResults";
+import ScheduleOptions from './ScheduleOptons';
 
 const DayTab = ({day, places, onReorder, estimatedTimes}) => {
     const [showMapRoute, setShowMapRoute] = useState(false);
@@ -219,6 +220,19 @@ const DayTab = ({day, places, onReorder, estimatedTimes}) => {
                     places={places}
                     day={day}
                 />
+
+                  <ScheduleOptions
+                  visible={showScheduleOptions}
+                  onClose={() => setShowScheduleOptions(false)}
+                  onOptimize={handleOptimizeSchedule}
+                />
+
+                <OptimizationResults
+                  visible={showOptimizationResults}
+                  onClose={() => setShowOptimizationResults(false)}
+                  results={optimizationResults}
+                  onApply={handleApplyOptimization}
+                />
         </View>
 
     );
@@ -294,6 +308,35 @@ const styles = StyleSheet.create({
     color: COLORS.primary,
     marginLeft: 4,
     fontWeight: '500',
+  },
+    summaryRight: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+    summaryLeft: {
+    flex: 1,
+  },
+  actionButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: COLORS.lightGray,
+    paddingHorizontal: 10,
+    paddingVertical: 6,
+    borderRadius: 15,
+    marginLeft: 8,
+  },
+  disabledButton: {
+    backgroundColor: COLORS.lightGray + '80',
+    opacity: 0.6,
+  },
+  actionButtonText: {
+    fontSize: 12,
+    color: COLORS.primary,
+    marginLeft: 4,
+    fontWeight: '500',
+  },
+  disabledText: {
+    color: COLORS.gray,
   },
 });
 
