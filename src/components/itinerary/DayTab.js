@@ -88,10 +88,25 @@ const DayTab = ({day, places, onReorder, estimatedTimes}) => {
       }
     };
 
-    const handleApplyOptimization = (results) => {
-      updateDayItinerary(day, results.optimizedPlaces);
-      Alert.alert('Success', 'Route has been optimized and applied!');
-    };
+ const handleApplyOptimization = async (results) => {
+  try {
+    // Save optimized places with their schedule metadata
+    const placesWithSchedule = results.optimizedPlaces.map((place, index) => ({
+      ...place,
+      scheduledStartTime: results.schedule?.[index]?.startTime,
+      scheduledEndTime: results.schedule?.[index]?.endTime,
+      estimatedArrival: results.schedule?.[index]?.arrival,
+    }));
+
+    await updateDayItinerary(day, placesWithSchedule);
+
+    Alert.alert('Success', 'Route has been optimized and saved!');
+    setShowOptimizationResults(false);
+  } catch (error) {
+    Alert.alert('Error', 'Failed to save optimized route. Please try again.');
+    console.error('Failed to save optimization:', error);
+  }
+};
 
     const getTotalDuration = () => {
         return places.reduce((total, place) => total + (place.visitDuration || 60), 0);

@@ -6,6 +6,8 @@ import { ScrollView } from "react-native";
 import { SafeAreaProvider } from "react-native-safe-area-context";
 import { Ionicons } from '@expo/vector-icons';
 import DayTab from "../components/itinerary/DayTab";
+import OptimizationResults from "../components/itinerary/OptimizationResults";
+import routeOptimizer from "../services/routeOptimizer";
 
 
 const DAYS = [
@@ -23,6 +25,7 @@ const ItineraryScreen = () =>{
 
   const [activeDay, setActiveDay] = React.useState('day1');
   const {itinerary, updateDayItinerary, loading, currentTrip} = useTrip();
+
 
   const handleReorder = (day, newPlaces) => {
     updateDayItinerary(day, newPlaces);
@@ -72,14 +75,37 @@ const ItineraryScreen = () =>{
   const getDayInfo = (dayKey) => {
     const dayPlaces = itinerary[dayKey] || [];
     const dayDuration = dayPlaces.reduce((sum, place) => sum + (place.visitDuration || 60), 0);
-    const estimatedTimes = getEstimatedTimes(dayPlaces);
+
+
+    const hasScheduledTimes = dayPlaces.length > 0 && dayPlaces[0].scheduledStartTime;
+      let startTime = null;
+    let endTime = null;
+    let estimatedTimes = [];
+
+    if (hasScheduledTimes){
+          // Use optimized schedule times
+    startTime = dayPlaces[0].scheduledStartTime;
+    endTime = dayPlaces[dayPlaces.length - 1].scheduledEndTime;
+
+    estimatedTimes = dayPlaces.map(place => ({
+      arrival: place.estimatedArrival || place.scheduledStartTime,
+      departure: place.scheduledEndTime,
+    }));
+    } else {
+      // fall back to mock
+      estimatedTimes = getEstimatedTimes(dayPlaces);
+    startTime = estimatedTimes.length > 0 ? estimatedTimes[0].arrival : null;
+    endTime = estimatedTimes.length > 0 ? estimatedTimes[estimatedTimes.length - 1].departure : null;
+    }
 
     return {
       places: dayPlaces,
       duration: dayDuration,
       count: dayPlaces.length,
-      startTime: estimatedTimes.length > 0 ? estimatedTimes[0].arrival : null,
-      endTime: estimatedTimes.length > 0 ? estimatedTimes[estimatedTimes.length - 1].departure : null
+      startTime,
+      endTime,
+      estimatedTimes,
+      isOptimized: hasScheduledTimes,
 
     };
   };
@@ -211,10 +237,20 @@ const ItineraryScreen = () =>{
                         day={activeDay}
                         places={itinerary[activeDay] || []}
                         onReorder={handleReorder}
-                        estimatedTimes={getEstimatedTimes(itinerary[activeDay] || [])}
+                        estimatedTimes={getDayInfo(activeDay).estimatedTimes}
+                        isOptimized={getDayInfo(activeDay).isOptimized}
                       />
                     </View>
 
+
+{/*
+                <OptimizationResults
+                  visible={showOptimizationResults}
+                  onClose={() => setShowOptimizationResults(false)}
+                  results={optimizationResults}
+                  onApply={handleApplyOptimization}
+                />
+ */}
 
                 </View>
 
