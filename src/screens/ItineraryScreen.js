@@ -74,10 +74,13 @@ const ItineraryScreen = () =>{
 
   const getDayInfo = (dayKey) => {
     const dayPlaces = itinerary[dayKey] || [];
+
+        console.log("do i have day places"+ dayPlaces);
     const dayDuration = dayPlaces.reduce((sum, place) => sum + (place.visitDuration || 60), 0);
 
 
     const hasScheduledTimes = dayPlaces.length > 0 && dayPlaces[0].scheduledStartTime;
+    console.log("do i have scheduleTimes"+ hasScheduledTimes);
       let startTime = null;
     let endTime = null;
     let estimatedTimes = [];
@@ -149,18 +152,6 @@ const ItineraryScreen = () =>{
                       {currentTrip ? currentTrip.name : 'My Trip'} : {totalPlaces} Places
                 </Text>
 
-                {/* Quick stats */}
-{/*                 <View style={styles.quickStats}>
-                {DAYS.map((day) => {
-                  const dayInfo = getDayInfo(day.key);
-                  return (
-                    <View key={day.key} style={styles.quickStat}>
-                      <Text style={styles.quickStatLabel}>{day.label}</Text>
-                      <Text style={styles.quickStatValue}>{dayInfo.count}</Text>
-                    </View>
-                  );
-                })}
-                </View> */}
               </View>
 
               <View style={{flex: 1, flexDirection: "row"}}>
@@ -173,7 +164,7 @@ const ItineraryScreen = () =>{
                     >
                       {DAYS.map((day) => {
                         const dayInfo = getDayInfo(day.key);
-                        const isActive = activeDay === day.ley;
+                        const isActive = activeDay === day.key;
                         return(
                           <TouchableOpacity
                           key={day.key}
@@ -255,10 +246,10 @@ const ItineraryScreen = () =>{
                 </View>
 
                      {/* Quick Add Button */}
-                      <TouchableOpacity style={styles.quickAddButton}>
+{/*                       <TouchableOpacity style={styles.quickAddButton}>
                       <Ionicons name="add-circle" size={24} color={COLORS.white} />
                         <Text style={styles.quickAddText}>SPOT</Text>
-                     </TouchableOpacity>
+                     </TouchableOpacity> */}
 
       </SafeAreaProvider>
 
@@ -385,7 +376,7 @@ const styles = StyleSheet.create({
     borderColor: '#ccc',
     borderLeftWidth: 1,
   },
-   quickAddButton: {
+/*    quickAddButton: {
     position: 'absolute',
     bottom: 20,
     right: 20,
@@ -405,7 +396,7 @@ const styles = StyleSheet.create({
     color: COLORS.white,
     fontWeight: '600',
     marginLeft: 8,
-  },
+  }, */
 });
 
 export default ItineraryScreen;

@@ -15,6 +15,8 @@ const DayTab = ({day, places, onReorder, estimatedTimes}) => {
     const [showOptimizationResults, setShowOptimizationResults] = useState(false);
     const [optimizationResults, setOptimizationResults] = useState(null);
     const [optimizing, setOptimizing] = useState(false);
+    const [showCurrentSchedule, setShowCurrentSchedule] = useState(false);
+
 
     const {removeFromDay, updatePlaceDuration, updateDayItinerary} = useTrip();
 
@@ -96,6 +98,8 @@ const DayTab = ({day, places, onReorder, estimatedTimes}) => {
       scheduledStartTime: results.schedule?.[index]?.startTime,
       scheduledEndTime: results.schedule?.[index]?.endTime,
       estimatedArrival: results.schedule?.[index]?.arrival,
+     // Keep travel information for display
+      travelFromPrevious: place.travelFromPrevious,
     }));
 
     await updateDayItinerary(day, placesWithSchedule);
@@ -202,6 +206,24 @@ const DayTab = ({day, places, onReorder, estimatedTimes}) => {
                             isLast={index === places.length - 1}
                         />
 
+                        {/* Travel info to next place - similar to OptimizationResults */}
+                        {index < places.length - 1 && (
+                            <View style={styles.travelInfoContainer}>
+                                <View style={styles.travelLine} />
+                                <View style={styles.travelContent}>
+                                    <Ionicons name="walk" size={16} color={COLORS.gray} />
+                                    {item.travelFromPrevious || places[index + 1].travelFromPrevious ? (
+                                        <Text style={styles.travelText}>
+                                            {places[index + 1].travelFromPrevious?.durationText || '~15 min'} • {places[index + 1].travelFromPrevious?.distanceText || '~1 km'}
+                                        </Text>
+                                    ) : (
+                                        <Text style={styles.travelText}>
+                                            Travel time to next location
+                                        </Text>
+                                    )}
+                                </View>
+                            </View>
+                        )}
 
                      {/* Move buttons for simple reordering */}
                      <View style={styles.moveButtonsContainer}>
@@ -301,8 +323,6 @@ const styles = StyleSheet.create({
   moveButtonsContainer: {
     flexDirection: 'row',
     justifyContent: 'center',
-    marginTop: -15,
-    marginBottom: 10,
   },
   moveButton: {
     backgroundColor: COLORS.white,
