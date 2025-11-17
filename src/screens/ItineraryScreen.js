@@ -48,6 +48,33 @@ const ItineraryScreen = () =>{
     return `${mins} min`;
   };
 
+  const resolveDisplayTime = (timeValue) => {
+    if (timeValue === null || timeValue === undefined) {
+      return null;
+    }
+    return typeof timeValue === 'number' ? formatTime(timeValue) : timeValue;
+  };
+
+  const getPlaceStartTime = (place) => {
+    if (!place) return null;
+    return resolveDisplayTime(
+      place.scheduledStartTime ||
+      place.arrivalTime ||
+      place.estimatedArrival ||
+      place.scheduledArrivalMinutes
+    );
+  };
+
+  const getPlaceEndTime = (place) => {
+    if (!place) return null;
+    return resolveDisplayTime(
+      place.scheduledEndTime ||
+      place.departureTime ||
+      place.estimatedDeparture ||
+      place.scheduledDepartureMinutes
+    );
+  };
+
   //simple mock time estimation
   const getEstimatedTimes = (places) => {
     let currentTime = 10 * 60; // start at 10:00 AM in minutes
@@ -79,21 +106,22 @@ const ItineraryScreen = () =>{
     const dayDuration = dayPlaces.reduce((sum, place) => sum + (place.visitDuration || 60), 0);
 
 
-    const hasScheduledTimes = dayPlaces.length > 0 && dayPlaces[0].scheduledStartTime;
+    const hasScheduledTimes = dayPlaces.some(place => getPlaceStartTime(place) && getPlaceEndTime(place));
     console.log("do i have scheduleTimes"+ hasScheduledTimes);
-      let startTime = null;
+    let startTime = null;
     let endTime = null;
     let estimatedTimes = [];
 
     if (hasScheduledTimes){
-          // Use optimized schedule times
-    startTime = dayPlaces[0].scheduledStartTime;
-    endTime = dayPlaces[dayPlaces.length - 1].scheduledEndTime;
+      const firstScheduledPlace = dayPlaces.find(place => getPlaceStartTime(place));
+      const lastScheduledPlace = [...dayPlaces].reverse().find(place => getPlaceEndTime(place));
+      startTime = getPlaceStartTime(firstScheduledPlace);
+      endTime = getPlaceEndTime(lastScheduledPlace);
 
-    estimatedTimes = dayPlaces.map(place => ({
-      arrival: place.estimatedArrival || place.scheduledStartTime,
-      departure: place.scheduledEndTime,
-    }));
+      estimatedTimes = dayPlaces.map(place => ({
+        arrival: getPlaceStartTime(place),
+        departure: getPlaceEndTime(place),
+      }));
     } else {
       // fall back to mock
       estimatedTimes = getEstimatedTimes(dayPlaces);
