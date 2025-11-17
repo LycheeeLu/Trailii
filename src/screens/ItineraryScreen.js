@@ -141,17 +141,7 @@ const ItineraryScreen = () =>{
     };
   };
 
-  // { totalPlaces: 3, totalDuration: 270 }
-  /* const itinerary = {
-  day1: [
-    { name: "museum", visitDuration: 90 },
-    { name: "park" } // no specified visitDuration，default 60
-  ],
-  day2: [
-    { name: "fish soup", visitDuration: 120 }
-  ]
-};
-  */
+
  const getTripSummary = () => {
   const totalPlaces = Object.values(itinerary).reduce((sum, dayPlaces) => sum + dayPlaces.length, 0);
   const totalDuration = Object.values(itinerary).reduce((sum, dayPlaces) => {
@@ -220,14 +210,6 @@ const ItineraryScreen = () =>{
                                 {dayInfo.count} places
                               </Text>
 
-{/*                               {dayInfo.duration > 0 && (
-                                <Text style={[
-                                  styles.dayTabDuration,
-                                  isActive && styles.activeDayTabDuration
-                                ]}>
-                                  {formatDuration(dayInfo.duration)}
-                                </Text>
-                              )} */}
 
                               {dayInfo.startTime && dayInfo.endTime && (
                                 <Text style={[
@@ -262,22 +244,11 @@ const ItineraryScreen = () =>{
                     </View>
 
 
-{/*
-                <OptimizationResults
-                  visible={showOptimizationResults}
-                  onClose={() => setShowOptimizationResults(false)}
-                  results={optimizationResults}
-                  onApply={handleApplyOptimization}
-                />
- */}
+
 
                 </View>
 
-                     {/* Quick Add Button */}
-{/*                       <TouchableOpacity style={styles.quickAddButton}>
-                      <Ionicons name="add-circle" size={24} color={COLORS.white} />
-                        <Text style={styles.quickAddText}>SPOT</Text>
-                     </TouchableOpacity> */}
+
 
       </SafeAreaProvider>
 
@@ -357,7 +328,7 @@ const styles = StyleSheet.create({
     color: COLORS.primary,
   },
   activeDayTabText: {
-    color: COLORS.white,
+    color: COLORS.primary,
   },
  dayTabMeta: {
     flexDirection: "column",
@@ -371,7 +342,7 @@ const styles = StyleSheet.create({
     marginBottom: 2
   },
   activeDayTabCount: {
-    color: COLORS.white + 'CC',
+    color: COLORS.primaryDark + 'CC',
   },
   dayTabDuration: {
     fontSize: 10,
@@ -380,7 +351,7 @@ const styles = StyleSheet.create({
     marginBottom: 2,
   },
   activeDayTabDuration: {
-    color: COLORS.white + 'AA',
+    color: COLORS.primaryDark + 'AA',
   },
   dayTabTime: {
     fontSize: 9,
@@ -388,7 +359,7 @@ const styles = StyleSheet.create({
     fontWeight: '400',
   },
   activeDayTabTime: {
-    color: COLORS.white + '99',
+    color: COLORS.primaryDark + '99',
   },
   activeIndicator: {
     position: 'absolute',

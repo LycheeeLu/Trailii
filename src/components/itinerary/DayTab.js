@@ -150,9 +150,6 @@ const DayTab = ({day, places, onReorder, estimatedTimes}) => {
         <View style={styles.container}>
               {/* Day summary */}
              <View style={styles.summaryContainer}>
-{/*                     <Text style={styles.summaryText}>
-                        {places.length} places • {formatTotalTime(getTotalDuration())} total
-                    </Text> */}
                    <View style={styles.summaryLeft}>
                       {optimizing && (
                         <View style={styles.optimizingBadge}>
