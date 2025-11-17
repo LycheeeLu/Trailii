@@ -192,7 +192,7 @@ class RouteOptimizer {
             if (!openingHours){
                 constrainedRoute.push(place);
                 scheduledPlaces.set(place.id, currentTime);
-                currentTime = addMinutes(currentTime, place.vistDuration || 60);
+                currentTime = addMinutes(currentTime, place.visitDuration || 60);
                 continue;
 
             }
