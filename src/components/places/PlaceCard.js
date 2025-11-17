@@ -57,9 +57,11 @@ const PlaceCard = ({place, onClose, visible}) => {
     };
 
     const handleSaveToDay = (day) => {
+        const resolvedLocation = placeDetails?.location || place.location;
         const placeToSave = {
             ...place,
             ...placeDetails,
+            location: resolvedLocation,
             visitDuration: 60, // default duration 1 hour
             addedAt: new Date().toISOString(),
         };
