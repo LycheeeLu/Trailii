@@ -1,12 +1,5 @@
 import React from 'react';
-import {
-  View,
-  Text,
-  StyleSheet,
-  TouchableOpacity,
-  Image,
-  Alert
-} from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, Image } from 'react-native';
 import { Ionicons } from "@expo/vector-icons";
 import {COLORS, SIZES} from "../../constants/config";
 import GooglePlacesService from "../../services/googlePlacesService";
@@ -22,19 +15,6 @@ const ItineraryItem = ({
     estimatedTime,
     isLast,
 }) => {
-
-    const handleRemove = () =>{
-        Alert.alert(
-            'Remove Spot',
-            `Remove ${place.name} from itinerary?`,
-            [
-                {text: "Cancel", style: "cancel"},
-                {text: "Remove",
-                    style: "destructive",
-                    onPress: () => onRemove(place) }
-            ]
-        );
-    };
 
     const getImageUrl = () => {
       const photoRef = place.photos[0].photo_reference || place.photos[0].photoreference;
@@ -105,7 +85,7 @@ const ItineraryItem = ({
                 {/* Remove button */}
                 <TouchableOpacity
                     style ={styles.removeButton}
-                    onPress = {handleRemove}
+                    onPress = {() => onRemove(place)}
                 >
                     <Ionicons name="close-circle"
                         size={20}
