@@ -14,6 +14,8 @@ const ItineraryItem = ({
     onDragStart,
     estimatedTime,
     isLast,
+    onMoveUp,
+    onMoveDown,
 }) => {
 
     const getImageUrl = () => {
@@ -29,9 +31,34 @@ const ItineraryItem = ({
              10:00 AM- 11:0 AM */}
              {estimatedTime && (
                 <View style={styles.timeContainer}>
-                    <Text style={styles.timeText}>
-                        {estimatedTime.arrival } - {estimatedTime.departure}
-                    </Text>
+                  <Text style={styles.timeText}>
+                    {estimatedTime.arrival } - {estimatedTime.departure}
+                  </Text>
+                  {(onMoveUp || onMoveDown) && (
+                    <View style={styles.timeActions}>
+                      {onMoveUp && (
+                        <TouchableOpacity
+                          style={styles.moveButtonInline}
+                          onPress={onMoveUp}
+                          accessibilityLabel="Move place earlier in the day"
+                        >
+                          <Ionicons name="arrow-up" size={16} color={COLORS.primary} />
+                        </TouchableOpacity>
+                      )}
+                      {onMoveDown && (
+                        <TouchableOpacity
+                          style={[
+                            styles.moveButtonInline,
+                            onMoveUp && styles.moveButtonSpacing,
+                          ]}
+                          onPress={onMoveDown}
+                          accessibilityLabel="Move place later in the day"
+                        >
+                          <Ionicons name="arrow-down" size={16} color={COLORS.primary} />
+                        </TouchableOpacity>
+                      )}
+                    </View>
+                  )}
                 </View>
              )}
 
@@ -107,11 +134,32 @@ const styles = StyleSheet.create({
   timeContainer: {
     paddingHorizontal: 15,
     marginBottom: 5,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
   },
   timeText: {
     fontSize: 12,
     color: COLORS.primary,
     fontWeight: '600',
+  },
+  timeActions: {
+    flexDirection: 'column',
+    alignItems: 'flex-end',
+  },
+  moveButtonInline: {
+    backgroundColor: COLORS.white,
+    borderRadius: 12,
+    padding: 4,
+    marginLeft: 8,
+    elevation: 1,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.15,
+    shadowRadius: 1.2,
+  },
+  moveButtonSpacing: {
+    marginTop: 6,
   },
   card: {
     flexDirection: 'row',

@@ -202,6 +202,8 @@ const DayTab = ({day, places, onReorder, estimatedTimes}) => {
                             onDragStart={handleDragStart}
                             estimatedTime={estimatedTimes?.[index]}
                             isLast={index === places.length - 1}
+                            onMoveUp={index > 0 ? () => movePlace(index, 'up') : undefined}
+                            onMoveDown={index < places.length - 1 ? () => movePlace(index, 'down') : undefined}
                         />
 
                         {/* Travel info to next place - similar to OptimizationResults */}
@@ -216,35 +218,13 @@ const DayTab = ({day, places, onReorder, estimatedTimes}) => {
                                         </Text>
                                     ) : (
                                         <Text style={styles.travelText}>
-                                            Travel time to next location
+                                           optimize to view travel time to next location
                                         </Text>
                                     )}
                                 </View>
                             </View>
                         )}
 
-                     {/* Move buttons for simple reordering */}
-                     <View style={styles.moveButtonsContainer}>
-                         {/* as long as indexed variable is not the first element, it can go up */}
-                        {index > 0 && (
-                            <TouchableOpacity
-                                style={styles.moveButton}
-                                onPress={() => movePlace(index, 'up')}
-                            >
-                                 <Ionicons name="arrow-up" size={16} color={COLORS.primary} />
-                            </TouchableOpacity>
-                        )
-                        }
-                         {/* as long as indexed varialbe is not the last element, it can go down */}
-                          {index < places.length - 1 && (
-                            <TouchableOpacity
-                            style={styles.moveButton}
-                            onPress={() => movePlace(index, 'down')}
-                            >
-                            <Ionicons name="arrow-down" size={16} color={COLORS.primary} />
-                            </TouchableOpacity>
-                        )}
-                     </View>
                     </View>
 
 
@@ -317,21 +297,6 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     marginTop: 8,
     lineHeight: 20,
-  },
-  moveButtonsContainer: {
-    flexDirection: 'row',
-    justifyContent: 'center',
-  },
-  moveButton: {
-    backgroundColor: COLORS.white,
-    borderRadius: 15,
-    padding: 5,
-    marginHorizontal: 5,
-    elevation: 1,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.22,
-    shadowRadius: 2.22,
   },
   mapButton: {
     flexDirection: 'row',
