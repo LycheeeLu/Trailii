@@ -12,7 +12,7 @@ import { getFirestore,
         arrayRemove
  } from "firebase/firestore";
 import { db } from './firebaseService';
-import { buildPlaceData } from "../utils/placeUtils";
+import { buildPlaceData, removeUndefined } from "../utils/placeUtils";
 
 /*
 example trip document:
@@ -207,7 +207,13 @@ class FireStoreService {
        // clean data first to remove undefined
         async updateDayItinerary(tripId, day, places){
         try {
-            const cleanPlaces = places.map(place => buildPlaceData(place));
+            const cleanPlaces = places.map(place => {
+                const preservedPlace = {
+                    ...place,
+                    visitDuration: place.visitDuration ?? 60,
+                };
+                return removeUndefined(preservedPlace);
+            });
             console.log('Place object:', JSON.stringify(cleanPlaces, null, 2));
             const tripRef = doc(db, this.tripsCollection, tripId);
             await updateDoc(tripRef,
