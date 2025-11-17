@@ -92,13 +92,14 @@ const DayTab = ({day, places, onReorder, estimatedTimes}) => {
 
  const handleApplyOptimization = async (results) => {
   try {
-    // Save optimized places with their schedule metadata
-    const placesWithSchedule = results.optimizedPlaces.map((place, index) => ({
+    const placesWithSchedule = results.optimizedPlaces.map((place) => ({
       ...place,
-      scheduledStartTime: results.schedule?.[index]?.startTime,
-      scheduledEndTime: results.schedule?.[index]?.endTime,
-      estimatedArrival: results.schedule?.[index]?.arrival,
-     // Keep travel information for display
+      scheduledStartTime: place.arrivalTime,
+      scheduledEndTime: place.departureTime,
+      scheduledArrivalMinutes: place.scheduledArrival,
+      scheduledDepartureMinutes: place.scheduledDeparture,
+      // ensure the time strings exist for screens that expect them
+      estimatedArrival: place.arrivalTime,
       travelFromPrevious: place.travelFromPrevious,
     }));
 
