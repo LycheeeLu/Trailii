@@ -209,7 +209,6 @@ const DayTab = ({day, places, onReorder, estimatedTimes}) => {
                         {/* Travel info to next place - similar to OptimizationResults */}
                         {index < places.length - 1 && (
                             <View style={styles.travelInfoContainer}>
-                                <View style={styles.travelLine} />
                                 <View style={styles.travelContent}>
                                     <Ionicons name="walk" size={16} color={COLORS.gray} />
                                     {item.travelFromPrevious || places[index + 1].travelFromPrevious ? (
@@ -297,6 +296,30 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     marginTop: 8,
     lineHeight: 20,
+  },
+  travelInfoContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginLeft: 35,
+    paddingLeft: 20,
+    paddingVertical: 12,
+    borderLeftWidth: 2,
+    borderLeftColor: COLORS.primary + '30',
+  },
+  travelContent: {
+    flex: 1,
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: COLORS.white,
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+    borderRadius: 12,
+  },
+  travelText: {
+    marginLeft: 8,
+    color: COLORS.gray,
+    fontSize: 12,
+    fontWeight: '500',
   },
   mapButton: {
     flexDirection: 'row',

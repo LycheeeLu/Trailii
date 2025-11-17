@@ -120,9 +120,6 @@ const ItineraryItem = ({
                     />
                 </TouchableOpacity>
             </View>
-             {/* Connection line to next item */}
-             {! isLast && <View style={styles.connectionLine} />}
-
         </View>
     );
 };
@@ -212,14 +209,6 @@ const styles = StyleSheet.create({
     padding: 8,
     marginLeft: 8,
   },
-  connectionLine: {
-    width: 2,
-    height: 20,
-    backgroundColor: COLORS.primary + '30',
-    marginLeft: 35,
-    marginTop: 10,
-  },
-
 }
 );
 
