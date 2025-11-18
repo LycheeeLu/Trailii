@@ -53,15 +53,6 @@ const ItineraryScreen = () =>{
     return `${displayHrs}:${mins.toString().padStart(2, '0')} ${ampm}`;
   };
 
-  const formatDuration = (minutes) => {
-    const hrs = Math.floor(minutes / 60);
-    const mins = minutes % 60;
-    if (hrs > 0) {
-      return `${hrs} hr ${mins} min`;
-    }
-    return `${mins} min`;
-  };
-
   const resolveDisplayTime = (timeValue) => {
     if (timeValue === null || timeValue === undefined) {
       return null;
@@ -187,7 +178,6 @@ const ItineraryScreen = () =>{
               </View>
 
               <View style={styles.storageModeContainer}>
-                <Text style={styles.storageLabel}>Storage mode</Text>
                 <View style={styles.storageButtonsRow}>
                   <TouchableOpacity
                     style={[
@@ -340,18 +330,12 @@ const styles = StyleSheet.create({
     width: '90%',
     alignSelf: 'center',
     backgroundColor: COLORS.surface,
-    borderRadius: 12,
+    borderRadius: 15,
     paddingVertical: 12,
-    paddingHorizontal: 16,
+    paddingHorizontal: 20,
     marginBottom: 10,
     borderColor: COLORS.border,
     borderWidth: 1,
-  },
-  storageLabel: {
-    fontSize: 14,
-    fontWeight: '600',
-    color: COLORS.textPrimary,
-    marginBottom: 8,
   },
   storageButtonsRow: {
     flexDirection: 'row',
@@ -359,20 +343,20 @@ const styles = StyleSheet.create({
   },
   storageButton: {
     flex: 1,
-    paddingVertical: 10,
+    paddingVertical: 5,
     borderRadius: 8,
     borderWidth: 1,
     borderColor: COLORS.border,
     alignItems: 'center',
     backgroundColor: COLORS.surface,
-    marginHorizontal: 4,
+    marginHorizontal: 30,
   },
   storageButtonActive: {
     backgroundColor: COLORS.primary,
     borderColor: COLORS.primaryDark,
   },
   storageButtonText: {
-    fontSize: 14,
+    fontSize: 12,
     fontWeight: '600',
     color: COLORS.primary,
   },
