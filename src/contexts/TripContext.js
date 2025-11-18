@@ -1,26 +1,33 @@
-import React, { createContext, useState, useEffect, useReducer, useContext, useRef } from 'react';
+import React, { createContext, useState, useEffect, useReducer, useContext, useRef, useMemo, useCallback } from 'react';
 import FirestoreService  from '../services/fireStoreService';
+import LocalTripStorage from '../services/localTripStorage';
 import { buildPlaceData } from '../utils/placeUtils';
 
 
 const TripContext = createContext();
 
+const STORAGE_MODES = {
+    ONLINE: 'online',
+    OFFLINE: 'offline',
+};
+
+const createEmptyItinerary = () => ({
+    day1: [],
+    day2: [],
+    day3: [],
+    day4: [],
+    day5: [],
+    day6: [],
+    day7: []
+});
+
 const initialState = {
     currentTrip: null,
     tripId: null,// initial value
     places: [],
-    itinerary:{
-        day1: [],
-        day2: [],
-        day3: [],
-        day4: [],
-        day5: [],
-        day6: [],
-        day7: []
-
-    },
+    itinerary: createEmptyItinerary(),
     loading: false,
-    error: null,
+  	error: null,
     isInitialized: false,
 }
 
@@ -35,7 +42,7 @@ const tripReducer = (state, action) => {
                 ...state,
                 currentTrip: action.payload,
                 tripId: action.payload?.id || null,
-                itinerary: action.payload.days,
+                itinerary: action.payload.days || createEmptyItinerary(),
                 loading: false,
                 error: null,
                 isInitialized: true
@@ -100,6 +107,11 @@ const tripReducer = (state, action) => {
         case 'SET_INITIALIZED':
         return { ...state, isInitialized: true, loading: false };
 
+        case 'RESET_STATE':
+            return {
+                ...initialState,
+                itinerary: createEmptyItinerary(),
+            };
 
         default:
             return state;
@@ -110,16 +122,28 @@ export const TripProvider = ({ children }) => {
     const [state, dispatch]= useReducer(tripReducer, initialState);
     const unsubscribeRef = useRef(null);
     const isLocalUpdateRef = useRef(false);
+    const [storageModeState, setStorageModeState] = useState(STORAGE_MODES.ONLINE);
+    const prevModeRef = useRef(storageModeState);
+
+    const storageServices = useMemo(() => ({
+        [STORAGE_MODES.ONLINE]: FirestoreService,
+        [STORAGE_MODES.OFFLINE]: LocalTripStorage,
+    }), []);
+
+    const storageService = useMemo(
+        () => storageServices[storageModeState],
+        [storageModeState, storageServices]
+    );
+
+    const setStorageMode = useCallback((mode) => {
+        setStorageModeState((prev) => (prev === mode ? prev : mode));
+    }, []);
 
 
-    useEffect(() => {
-        if (!state.isInitialized){
-         initializeTrip();
+    const initializeTrip = useCallback(async (service) => {
+        if (!service) {
+            return;
         }
-
-    }, [state.isInitialized]);
-
-    const initializeTrip = async () => {
         dispatch({type: 'SET_LOADING', payload: true});
 
         try {
@@ -127,7 +151,7 @@ export const TripProvider = ({ children }) => {
             let trip;
             if (state.tripId && state.tripId !== null){
                 try {
-                trip = await FirestoreService.getTrip(state.tripId);
+                trip = await service.getTrip(state.tripId);
 
                 } catch (error) {
                 console.error('Full error object:', error);
@@ -142,7 +166,7 @@ export const TripProvider = ({ children }) => {
             if (!trip){
                 console.log('Creating new default trip...');
                 // create default trip it it doesnt exist
-                trip = await FirestoreService.createTrip('default_user', {
+                trip = await service.createTrip('default_user', {
                     name: 'My Traili Trip',
                     destination: 'destination places'
 
@@ -156,22 +180,46 @@ export const TripProvider = ({ children }) => {
             }
 
             // subscribe to real-time updates
-            unsubscribeRef.current = FirestoreService.subscribeToTrip(trip.id, (updatedTrip) => {
-                console.log('🔔 Real-time update received');
-                if (isLocalUpdateRef.current) {
-                    console.log('⏭️  Skipping real-time update (local operation)');
-                    isLocalUpdateRef.current = false;
-                    return;
-                }
-                console.log('📄 Updating from Firestore');
-                dispatch({type: 'UPDATE_TRIP_FROM_FIRESTORE', payload: updatedTrip});
+            if (typeof service.subscribeToTrip === 'function') {
+                unsubscribeRef.current = service.subscribeToTrip(trip.id, (updatedTrip) => {
+                    console.log('🔔 Storage update received');
+                    if (isLocalUpdateRef.current) {
+                        console.log('⏭️  Skipping update (local operation)');
+                        isLocalUpdateRef.current = false;
+                        return;
+                    }
+                    console.log('📄 Updating from storage');
+                    dispatch({type: 'UPDATE_TRIP_FROM_FIRESTORE', payload: updatedTrip});
 
-            });
+                });
+            } else {
+                unsubscribeRef.current = null;
+            }
         } catch (error) {
             console.error('Error in initializeTrip:', error);
             dispatch({type: 'SET_ERROR', payload: error.message});
         }
-    };
+    }, [state.tripId]);
+
+    useEffect(() => {
+        if (!storageService) {
+            return;
+        }
+        if (!state.isInitialized && !state.loading){
+            initializeTrip(storageService);
+        }
+    }, [state.isInitialized, state.loading, storageService, initializeTrip]);
+
+    useEffect(() => {
+        if (prevModeRef.current !== storageModeState) {
+            if (unsubscribeRef.current) {
+                unsubscribeRef.current();
+                unsubscribeRef.current = null;
+            }
+            dispatch({type: 'RESET_STATE'});
+        }
+        prevModeRef.current = storageModeState;
+    }, [storageModeState]);
 
     // clear all subscription
         useEffect(() => {
@@ -192,6 +240,9 @@ export const TripProvider = ({ children }) => {
             if (!state.currentTrip?.id) {
                 throw new Error('No current trip available');
             }
+            if (!storageService) {
+                throw new Error('Storage service is not ready');
+            }
             const optimisticPlace = {
                 ...place,
                 tempId: `${place.id || 'place'}_${Date.now()}`,
@@ -208,7 +259,7 @@ export const TripProvider = ({ children }) => {
             isLocalUpdateRef.current = true;
 
             const cleanPlace = buildPlaceData(place);
-            const savedPlace = await FirestoreService.addPlaceToDay(state.currentTrip.id, day, cleanPlace);
+            const savedPlace = await storageService.addPlaceToDay(state.currentTrip.id, day, cleanPlace);
             console.log('✅ Place saved to Firestore:', savedPlace);
 
             setTimeout(() => {
@@ -231,6 +282,9 @@ export const TripProvider = ({ children }) => {
             if(!state.currentTrip?.id){
                 throw new Error('No current trip available');
             }
+            if (!storageService) {
+                throw new Error('Storage service is not ready');
+            }
             const placeToRemove = state.itinerary[day].find(
                 place => place.tempId === placeId || place.id === placeId
             );
@@ -248,7 +302,7 @@ export const TripProvider = ({ children }) => {
 
              isLocalUpdateRef.current = true;
 
-            await FirestoreService.removePlaceFromDay(state.currentTrip.id, day, placeToRemove);
+            await storageService.removePlaceFromDay(state.currentTrip.id, day, placeToRemove);
             console.log('Place removed from Firestore');
 
             setTimeout(() => {
@@ -267,7 +321,12 @@ export const TripProvider = ({ children }) => {
     const updateDayItinerary = async(day, places) =>{
         try{
             console.log(' Updating day itinerary:', day, places);
-
+            if (!state.currentTrip?.id) {
+                throw new Error('No current trip available');
+            }
+            if (!storageService) {
+                throw new Error('Storage service is not ready');
+            }
 
             //upload local data immediately
                dispatch({
@@ -277,7 +336,7 @@ export const TripProvider = ({ children }) => {
             });
 
              isLocalUpdateRef.current = true;
-            await FirestoreService.updateDayItinerary(state.currentTrip.id, day, places);
+            await storageService.updateDayItinerary(state.currentTrip.id, day, places);
 
             setTimeout(() => {
                 isLocalUpdateRef.current = false;
@@ -290,9 +349,15 @@ export const TripProvider = ({ children }) => {
     const updatePlaceDuration = async(day, placeIndex, duration) => {
         try {
             console.log('Updating place duration:', day, placeIndex, duration);
+            if (!state.currentTrip?.id) {
+                throw new Error('No current trip available');
+            }
+            if (!storageService) {
+                throw new Error('Storage service is not ready');
+            }
              isLocalUpdateRef.current = true;
-            await FirestoreService.updatePlaceDuration(state.currentTrip.id, day, placeIndex, duration);
-            const updatedTrip = await FirestoreService.getTrip(state.currentTrip.id);
+            await storageService.updatePlaceDuration(state.currentTrip.id, day, placeIndex, duration);
+            const updatedTrip = await storageService.getTrip(state.currentTrip.id);
             dispatch({type: 'SET_TRIP', payload: updatedTrip});
                 setTimeout(() => {
                 isLocalUpdateRef.current = false;
@@ -310,6 +375,9 @@ export const TripProvider = ({ children }) => {
         removeFromDay,
         updateDayItinerary,
         updatePlaceDuration,
+        storageMode: storageModeState,
+        storageModes: STORAGE_MODES,
+        setStorageMode,
 
     };
 

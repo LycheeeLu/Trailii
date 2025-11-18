@@ -24,11 +24,25 @@ const DAYS = [
 const ItineraryScreen = () =>{
 
   const [activeDay, setActiveDay] = React.useState('day1');
-  const {itinerary, updateDayItinerary, loading, currentTrip} = useTrip();
+  const {
+    itinerary,
+    updateDayItinerary,
+    loading,
+    currentTrip,
+    storageMode,
+    storageModes,
+    setStorageMode
+  } = useTrip();
 
 
   const handleReorder = (day, newPlaces) => {
     updateDayItinerary(day, newPlaces);
+  };
+
+  const handleStorageModeChange = (mode) => {
+    if (storageMode !== mode) {
+      setStorageMode(mode);
+    }
   };
 
   const formatTime = (minutes) => {
@@ -172,6 +186,49 @@ const ItineraryScreen = () =>{
 
               </View>
 
+              <View style={styles.storageModeContainer}>
+                <Text style={styles.storageLabel}>Storage mode</Text>
+                <View style={styles.storageButtonsRow}>
+                  <TouchableOpacity
+                    style={[
+                      styles.storageButton,
+                      storageMode === storageModes.ONLINE && styles.storageButtonActive,
+                    ]}
+                    onPress={() => handleStorageModeChange(storageModes.ONLINE)}
+                  >
+                    <Text
+                      style={[
+                        styles.storageButtonText,
+                        storageMode === storageModes.ONLINE && styles.storageButtonTextActive,
+                      ]}
+                    >
+                      Online
+                    </Text>
+                  </TouchableOpacity>
+                  <TouchableOpacity
+                    style={[
+                      styles.storageButton,
+                      storageMode === storageModes.OFFLINE && styles.storageButtonActive,
+                    ]}
+                    onPress={() => handleStorageModeChange(storageModes.OFFLINE)}
+                  >
+                    <Text
+                      style={[
+                        styles.storageButtonText,
+                        storageMode === storageModes.OFFLINE && styles.storageButtonTextActive,
+                      ]}
+                    >
+                      Offline
+                    </Text>
+                  </TouchableOpacity>
+                </View>
+                <Text style={styles.storageHint}>
+                  {storageMode === storageModes.ONLINE
+                    ? 'Syncs across devices via Firestore.'
+                    : 'Saved locally on this device only.'}
+                </Text>
+              </View>
+
               <View style={{flex: 1, flexDirection: "row"}}>
                    {/* Day Tabs on the Left */}
                   <View style={styles.tabsContainer}>
@@ -278,6 +335,54 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     color: COLORS.primary,
     marginBottom: 5,
+  },
+  storageModeContainer: {
+    width: '90%',
+    alignSelf: 'center',
+    backgroundColor: COLORS.surface,
+    borderRadius: 12,
+    paddingVertical: 12,
+    paddingHorizontal: 16,
+    marginBottom: 10,
+    borderColor: COLORS.border,
+    borderWidth: 1,
+  },
+  storageLabel: {
+    fontSize: 14,
+    fontWeight: '600',
+    color: COLORS.textPrimary,
+    marginBottom: 8,
+  },
+  storageButtonsRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+  },
+  storageButton: {
+    flex: 1,
+    paddingVertical: 10,
+    borderRadius: 8,
+    borderWidth: 1,
+    borderColor: COLORS.border,
+    alignItems: 'center',
+    backgroundColor: COLORS.surface,
+    marginHorizontal: 4,
+  },
+  storageButtonActive: {
+    backgroundColor: COLORS.primary,
+    borderColor: COLORS.primaryDark,
+  },
+  storageButtonText: {
+    fontSize: 14,
+    fontWeight: '600',
+    color: COLORS.primary,
+  },
+  storageButtonTextActive: {
+    color: COLORS.white,
+  },
+  storageHint: {
+    marginTop: 8,
+    fontSize: 12,
+    color: COLORS.gray,
   },
   tripSummary: {
     fontSize: 14,

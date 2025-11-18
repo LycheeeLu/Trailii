@@ -1,4 +1,4 @@
-import React, {useState, useEffect} from "react";
+import React, {useState, useEffect, useCallback} from "react";
 import {View, Text, StyleSheet, Alert} from "react-native";
 import { COLORS } from "../constants/config";
 import MapView, {Marker} from "react-native-maps";
@@ -12,53 +12,77 @@ console.log('SearchBar component:', SearchBar);
 console.log('googePlacesService object:', googePlacesService);
 
 
+const HELSINKI_REGION = {
+    latitude: 60.1699,
+    longitude: 24.9384,
+    latitudeDelta: 0.010,
+    longitudeDelta: 0.010,
+};
+
 const MapScreen = () => {
     const [location, setLocation] = useState(null);
     const [region, setRegion] = useState(null);
     const [places, setPlaces] = useState([]);
     const [selectedPlace, setSelectedPlace] = useState(null);
     const [showPlaceCard, setShowPlaceCard] = useState(false);
+    const [hasPromptedForPermission, setHasPromptedForPermission] = useState(false);
 
-    useEffect(() => {
-        (async () => {
-            let {status} = await Location.requestForegroundPermissionsAsync();
-            if (status !== 'granted') {
-                Alert.alert('Permission to access location was denied','Please enable it to use map');
-
-                return;
-            }
-
-            let currentLocation = await Location.getCurrentPositionAsync({});
-            setLocation(currentLocation);
-
-            const newRegion = {
-                //latitude: currentLocation.coords.latitude,
-                //longitude: currentLocation.coords.longitude,
-                latitude: 60.1699,
-                longitude: 24.9384,
-                latitudeDelta: 0.010,
-                longitudeDelta: 0.010,
-                //helsinki cathedral
-
-            };
-            setRegion(newRegion);
-
-
-            // load nearby places
-            loadNearbyPlaces(currentLocation.coords.latitude, currentLocation.coords.longitude);
-        })();
-    }, []);
-
-
-    const loadNearbyPlaces = async (latitude, longitude) => {
+    const loadNearbyPlaces = useCallback(async (latitude, longitude) => {
         try {
             const nearbyPlaces = await googePlacesService.searchNearby(latitude, longitude, 10000);
             setPlaces(nearbyPlaces);
         } catch (error) {
             console.error('Error loading nearby places:', error);
         }
-    };
+    }, []);
 
+    const fetchLocation = useCallback(async () => {
+        try {
+            const {status} = await Location.requestForegroundPermissionsAsync();
+            if (status !== 'granted') {
+                Alert.alert('Location permission required','Please enable it to use your current position. Showing Helsinki by default.');
+                setRegion(HELSINKI_REGION);
+                return;
+            }
+
+            const currentLocation = await Location.getCurrentPositionAsync({});
+            setLocation(currentLocation);
+
+            const newRegion = {
+                latitude: currentLocation.coords.latitude,
+                longitude: currentLocation.coords.longitude,
+                latitudeDelta: 0.010,
+                longitudeDelta: 0.010,
+            };
+            setRegion(newRegion);
+
+            // load nearby places using the real coordinates
+            loadNearbyPlaces(currentLocation.coords.latitude, currentLocation.coords.longitude);
+        } catch (error) {
+            console.error('Error getting user location:', error);
+            Alert.alert('Unable to fetch location','Showing Helsinki by default.');
+            setRegion(HELSINKI_REGION);
+        }
+    }, [loadNearbyPlaces]);
+
+    useEffect(() => {
+        if (!hasPromptedForPermission) {
+            Alert.alert(
+                'Allow location access',
+                'Trailii needs access to your location to show nearby places. Continue to choose whether to grant permission.',
+                [
+                    {
+                        text: 'Continue',
+                        onPress: () => {
+                            setHasPromptedForPermission(true);
+                            fetchLocation();
+                        },
+                    },
+                ],
+                {cancelable: false},
+            );
+        }
+    }, [hasPromptedForPermission, fetchLocation]);
     const handlePlaceSelect = (place) => {
         setSelectedPlace(place);
         setShowPlaceCard(true);
