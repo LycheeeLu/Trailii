@@ -112,6 +112,17 @@ const OptimizationResults = ({ visible, onClose, results, onApply, onCancel }) =
               </View>
             </View>
 
+            {results.warnings && results.warnings.length > 0 && (
+              <View style={styles.warningContainer}>
+                {results.warnings.map((warning, index) => (
+                  <View key={`${warning}-${index}`} style={styles.warningRow}>
+                    <Ionicons name="warning" size={16} color={COLORS.warning} />
+                    <Text style={styles.warningText}>{warning}</Text>
+                  </View>
+                ))}
+              </View>
+            )}
+
             {/* Optimized Route */}
             <Text style={styles.sectionTitle}>Optimized Route</Text>
             <View style={styles.routeContainer}>
@@ -165,18 +176,6 @@ const OptimizationResults = ({ visible, onClose, results, onApply, onCancel }) =
               </>
             )} */}
 
-            {/* Warnings */}
-{/*             {results.warnings && results.warnings.length > 0 && (
-              <>
-                <Text style={styles.sectionTitle}>Warnings</Text>
-                {results.warnings.map((warning, index) => (
-                  <View key={index} style={styles.warningCard}>
-                    <Ionicons name="warning" size={18} color={COLORS.warning} />
-                    <Text style={styles.warningText}>{warning}</Text>
-                  </View>
-                ))}
-              </>
-            )} */}
           </ScrollView>
 
           {/* Action Buttons */}
@@ -272,6 +271,23 @@ const styles = StyleSheet.create({
     color: COLORS.black,
     marginLeft: 10,
     fontWeight: '500',
+  },
+  warningContainer: {
+    backgroundColor: COLORS.warning + '15',
+    borderRadius: 10,
+    padding: 12,
+    marginBottom: 20,
+  },
+  warningRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 6,
+  },
+  warningText: {
+    marginLeft: 8,
+    fontSize: 13,
+    color: COLORS.black,
+    flex: 1,
   },
   sectionTitle: {
     fontSize: 18,

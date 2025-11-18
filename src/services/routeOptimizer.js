@@ -50,8 +50,11 @@ class RouteOptimizer {
 
             // step 3: apply time window constraints
             let finalRoute = optimizedRoute;
+            let timeConstraintWarnings = [];
             if (considerOpeningHours) {
-                finalRoute = this.applyTimeConstraints(optimizedRoute, startTime);
+                const constraintResult = this.applyTimeConstraints(optimizedRoute, startTime);
+                finalRoute = constraintResult.route;
+                timeConstraintWarnings = constraintResult.warnings;
             }
 
             // step 4: create detailed schedule
@@ -60,7 +63,8 @@ class RouteOptimizer {
                 distanceMatrix,
                 startTime,
                 scheduleType,
-                considerOpeningHours
+                considerOpeningHours,
+                timeConstraintWarnings
             );
 
             // step 5: generate insights
@@ -184,6 +188,7 @@ class RouteOptimizer {
     applyTimeConstraints(route, startTime){
         const constrainedRoute = [];
         const scheduledPlaces = new Map();
+        const warnings = [];
         let currentTime = startTime;
         for (const place of route) {
             const openingHours = this.getOpeningHours(place);
@@ -210,10 +215,15 @@ class RouteOptimizer {
                 scheduledPlaces.set(place.id, currentTime);
                 currentTime = visitEnd;
                     } else {
-                        console.log(`⚠️ ${place.name} cannot be visited (closes at ${formatTime(close)})`);
+                        const warningMsg = `${place.name} skipped - closes at ${formatTime(close)}`;
+                        console.log(`⚠️ ${warningMsg}`);
+                        warnings.push(warningMsg);
                     }
          }
-        return constrainedRoute;
+        return {
+            route: constrainedRoute,
+            warnings
+        };
     }
 
     // get opening hours
@@ -224,10 +234,10 @@ class RouteOptimizer {
 
 
     // create detailed schedule with all information
-    async createDetailedSchedule(places, distanceMatrix, startTime, scheduleType, considerOpeningHours) {
+    async createDetailedSchedule(places, distanceMatrix, startTime, scheduleType, considerOpeningHours, initialWarnings = []) {
     const schedule = [];
     let currentTime = startTime;
-    const warnings = [];
+    const warnings = [...initialWarnings];
     const bufferTime = this.bufferTimes[scheduleType];
 
     console.log(`📅 Creating ${scheduleType} schedule starting at ${formatTime(startTime)}`);

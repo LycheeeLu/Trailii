@@ -217,7 +217,7 @@ const DayTab = ({day, places, onReorder, estimatedTimes}) => {
                                         </Text>
                                     ) : (
                                         <Text style={styles.travelText}>
-                                           optimize to view travel time to next location
+                                           optimize to view travel time
                                         </Text>
                                     )}
                                 </View>
