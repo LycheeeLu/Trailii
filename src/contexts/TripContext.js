@@ -27,9 +27,9 @@ const initialState = {
     places: [],
     itinerary: createEmptyItinerary(),
     loading: false,
-  	error: null,
+    error: null,
     isInitialized: false,
-}
+};
 
 const tripReducer = (state, action) => {
     switch(action.type){
@@ -105,13 +105,10 @@ const tripReducer = (state, action) => {
             };
 
         case 'SET_INITIALIZED':
-        return { ...state, isInitialized: true, loading: false };
+            return { ...state, isInitialized: true, loading: false };
 
-        case 'RESET_STATE':
-            return {
-                ...initialState,
-                itinerary: createEmptyItinerary(),
-            };
+        case 'MARK_UNINITIALIZED':
+            return { ...state, isInitialized: false };
 
         default:
             return state;
@@ -124,6 +121,10 @@ export const TripProvider = ({ children }) => {
     const isLocalUpdateRef = useRef(false);
     const [storageModeState, setStorageModeState] = useState(STORAGE_MODES.ONLINE);
     const prevModeRef = useRef(storageModeState);
+    const tripIdsRef = useRef({
+        [STORAGE_MODES.ONLINE]: null,
+        [STORAGE_MODES.OFFLINE]: null,
+    });
 
     const storageServices = useMemo(() => ({
         [STORAGE_MODES.ONLINE]: FirestoreService,
@@ -140,8 +141,8 @@ export const TripProvider = ({ children }) => {
     }, []);
 
 
-    const initializeTrip = useCallback(async (service) => {
-        if (!service) {
+    const initializeTrip = useCallback(async (service, mode) => {
+        if (!service || !mode) {
             return;
         }
         dispatch({type: 'SET_LOADING', payload: true});
@@ -149,9 +150,10 @@ export const TripProvider = ({ children }) => {
         try {
             // try get existing trip or create new one
             let trip;
-            if (state.tripId && state.tripId !== null){
+            const existingTripId = tripIdsRef.current[mode];
+            if (existingTripId){
                 try {
-                trip = await service.getTrip(state.tripId);
+                    trip = await service.getTrip(existingTripId);
 
                 } catch (error) {
                 console.error('Full error object:', error);
@@ -173,6 +175,10 @@ export const TripProvider = ({ children }) => {
                 });
             }
             dispatch({type: 'SET_TRIP', payload: trip});
+            tripIdsRef.current = {
+                ...tripIdsRef.current,
+                [mode]: trip.id,
+            };
 
             // cleaar previous subscription
                 if (unsubscribeRef.current) {
@@ -199,16 +205,16 @@ export const TripProvider = ({ children }) => {
             console.error('Error in initializeTrip:', error);
             dispatch({type: 'SET_ERROR', payload: error.message});
         }
-    }, [state.tripId]);
+    }, []);
 
     useEffect(() => {
         if (!storageService) {
             return;
         }
         if (!state.isInitialized && !state.loading){
-            initializeTrip(storageService);
+            initializeTrip(storageService, storageModeState);
         }
-    }, [state.isInitialized, state.loading, storageService, initializeTrip]);
+    }, [state.isInitialized, state.loading, storageService, storageModeState, initializeTrip]);
 
     useEffect(() => {
         if (prevModeRef.current !== storageModeState) {
@@ -216,7 +222,7 @@ export const TripProvider = ({ children }) => {
                 unsubscribeRef.current();
                 unsubscribeRef.current = null;
             }
-            dispatch({type: 'RESET_STATE'});
+            dispatch({type: 'MARK_UNINITIALIZED'});
         }
         prevModeRef.current = storageModeState;
     }, [storageModeState]);
