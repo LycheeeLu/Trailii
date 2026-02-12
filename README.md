@@ -8,6 +8,23 @@
   - Firebase Auth + Firestore for cloud storage.
   - AsyncStorage for offline/local persistence.
   - Google Maps / Places APIs via custom service wrappers.
+ 
+## App Screen shots
+<img src="Screenshot 2026-02-13 at 1.04.02.png" width="80%" />
+
+<img src="Screenshot 2026-02-13 at 1.04.20.png" width="80%" />
+
+<img src="Screenshot 2026-02-13 at 1.04.29.png" width="80%" />
+<img src="Screenshot 2026-02-13 at 1.04.33.png" width="80%" />
+<img src="Screenshot 2026-02-13 at 1.04.36.png" width="80%" />
+<img src="Screenshot 2026-02-13 at 1.04.40.png" width="80%" />
+<img src="Screenshot 2026-02-13 at 1.04.43.png" width="80%" />
+<img src="Screenshot 2026-02-13 at 1.04.47.png" width="80%" />
+<img src="Screenshot 2026-02-13 at 1.04.50.png" width="80%" />
+<img src="Screenshot 2026-02-13 at 1.04.53.png" width="80%" />
+<img src="Screenshot 2026-02-13 at 1.04.57.png" width="80%" />
+<img src="Screenshot 2026-02-13 at 1.05.01.png" width="80%" />
+<img src="Screenshot 2026-02-13 at 1.05.07.png" width="80%" />
 
 ## Essential Features & Logic
 1. **Itinerary Planner**
